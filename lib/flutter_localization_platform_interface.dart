@@ -8,7 +8,8 @@ abstract class FlutterLocalizationPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static FlutterLocalizationPlatform _instance = MethodChannelFlutterLocalization();
+  static FlutterLocalizationPlatform _instance =
+      MethodChannelFlutterLocalization();
 
   /// The default instance of [FlutterLocalizationPlatform] to use.
   ///

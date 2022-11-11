@@ -1,3 +1,6 @@
+## 0.1.8
+* remove **getString** method from **FlutterLocalization** class
+* **getString** extension now required **context** parameter
 ## 0.1.7
 * added string extension for more easy use of the **getString** function
 ## 0.1.6
