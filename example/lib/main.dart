@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 
-import 'primary_button_widget.dart';
-
 void main() {
   runApp(const MyApp());
 }
@@ -53,7 +51,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final FlutterLocalization _translator = FlutterLocalization.instance;
+  final FlutterLocalization _localization = FlutterLocalization.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -64,26 +62,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Current language is: ${_translator.getLanguageName()}'),
+            Text('Current language is: ${_localization.getLanguageName()}'),
             const SizedBox(height: 64.0),
             Row(
               children: [
                 Expanded(
-                  child: PrimaryButtonWidget(
-                    label: AppLocale.title.getString(context),
-                    onPressed: () => _translator.translate('en'),
+                  child: ElevatedButton(
+                    child: const Text('English'),
+                    onPressed: () {
+                      _localization.translate('en');
+                    },
                   ),
                 ),
+                const SizedBox(width: 8.0),
                 Expanded(
-                  child: PrimaryButtonWidget(
-                    label: AppLocale.title.getString(context),
-                    onPressed: () => _translator.translate('km'),
+                  child: ElevatedButton(
+                    child: const Text('ភាសាខ្មែរ'),
+                    onPressed: () {
+                      _localization.translate('km');
+                    },
                   ),
                 ),
+                const SizedBox(width: 8.0),
                 Expanded(
-                  child: PrimaryButtonWidget(
-                    label: AppLocale.title.getString(context),
-                    onPressed: () => _translator.translate('ja'),
+                  child: ElevatedButton(
+                    child: const Text('日本語'),
+                    onPressed: () {
+                      _localization.translate('ja', save: false);
+                    },
                   ),
                 ),
               ],

@@ -2,7 +2,7 @@
 Flutter Localization is a package use for in-app localization with Map data.
 More easier and faster to implement. This package is inspired by the
 **flutter_localizations** itself. Follow the step below to use the package or
-checkout a small complete [example](https://pub.dev/packages/flutter_translator/example)
+checkout a small complete [example](https://pub.dev/packages/flutter_localization/example)
 project of the package.
 
 <a href="https://www.buymeacoffee.com/eamchanndara" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>

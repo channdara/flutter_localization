@@ -1,3 +1,8 @@
+## 0.1.10
+* update some dependencies use to support the package
+## 0.1.9
+* fixed missing **web** plugin support
+* updated README documentation
 ## 0.1.8
 * remove **getString** method from **FlutterLocalization** class
 * **getString** extension now required **context** parameter
