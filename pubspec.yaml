@@ -3,8 +3,11 @@ description: Flutter Localization is a package use for in-app localization with 
 version: 0.1.10
 homepage: https://github.com/channdara/flutter_localization
 
-# check package before publish: flutter pub publish --dry-run
-# publish package: flutter pub publish
+scripts:
+  # rps test
+  test: 'flutter pub publish --dry-run'
+  # rps publish
+  publish: 'flutter pub publish'
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
