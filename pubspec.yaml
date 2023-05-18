@@ -1,7 +1,8 @@
 name: flutter_localization
 description: Flutter Localization is a package use for in-app localization with map data. More easier and faster to implement and inspired by the flutter_localizations itself.
-version: 0.1.10
+version: 0.1.11
 homepage: https://github.com/channdara/flutter_localization
+issue_tracker: https://github.com/channdara/flutter_localization/issues
 
 scripts:
   # rps test
@@ -10,7 +11,7 @@ scripts:
   publish: 'flutter pub publish'
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.12.0 <4.0.0'
   flutter: '>=1.12.13'
 
 dependencies:
@@ -20,8 +21,8 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  plugin_platform_interface: ^2.1.3
-  shared_preferences: ^2.0.17
+  plugin_platform_interface: ^2.1.4
+  shared_preferences: ^2.1.1
 
 dev_dependencies:
   flutter_test:

@@ -8,7 +8,7 @@ mixin PreferenceUtil {
   static const String _language_code = 'translator_language_code';
   static const String _country_code = 'translator_country_code';
 
-  /// Load the save locale in the shared_preferences.
+  /// Load the saved locale in the shared_preferences.
   static Future<Locale?> _getLocale() async {
     final pref = await SharedPreferences.getInstance();
     final prefData = pref.getString(_locale_key);

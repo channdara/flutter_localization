@@ -5,6 +5,14 @@ void main() {
   runApp(const MyApp());
 }
 
+mixin AppLocale {
+  static const String title = 'title';
+
+  static const Map<String, dynamic> EN = {title: 'Localization'};
+  static const Map<String, dynamic> KM = {title: 'ការធ្វើមូលដ្ឋានីយកម្ម'};
+  static const Map<String, dynamic> JA = {title: 'ローカリゼーション'};
+}
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -19,9 +27,9 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     _localization.init(
       mapLocales: [
-        const MapLocale('en', AppLocale.EN),
-        const MapLocale('km', AppLocale.KM),
-        const MapLocale('ja', AppLocale.JA),
+        const MapLocale('en', AppLocale.EN, fontFamily: 'Font EN'),
+        const MapLocale('km', AppLocale.KM, fontFamily: 'Font KM'),
+        const MapLocale('ja', AppLocale.JA, fontFamily: 'Font JA'),
       ],
       initLanguageCode: 'en',
     );
@@ -39,6 +47,7 @@ class _MyAppState extends State<MyApp> {
       supportedLocales: _localization.supportedLocales,
       localizationsDelegates: _localization.localizationsDelegates,
       home: const SettingsScreen(),
+      theme: ThemeData(fontFamily: _localization.fontFamily),
     );
   }
 }
@@ -63,6 +72,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text('Current language is: ${_localization.getLanguageName()}'),
+            const SizedBox(height: 8.0),
+            Text('Font Family: ${_localization.fontFamily}'),
             const SizedBox(height: 64.0),
             Row(
               children: [
@@ -99,12 +110,4 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
-}
-
-mixin AppLocale {
-  static const String title = 'title';
-
-  static const Map<String, dynamic> EN = {title: 'Localization'};
-  static const Map<String, dynamic> KM = {title: 'ការធ្វើមូលដ្ឋានីយកម្ម'};
-  static const Map<String, dynamic> JA = {title: 'ローカリゼーション'};
 }

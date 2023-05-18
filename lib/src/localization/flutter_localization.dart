@@ -29,6 +29,9 @@ class FlutterLocalization {
   /// function is called.
   TranslatorCallback? onTranslatedLanguage;
 
+  /// The map data that store all the provided font family from [MapLocale]
+  final Map<String, String?> _fontFamily = {};
+
   /// Initialize the list of mapLocale (see [MapLocale] model for info)
   /// and initLanguageCode code when the app is start up. Both field will required.
   ///
@@ -41,6 +44,9 @@ class FlutterLocalization {
   }) async {
     FlutterLocalizationTranslator.instance.mapLocales = mapLocales;
     _supportedLanguageCodes = mapLocales.map((e) => e.languageCode).toList();
+    mapLocales.forEach((element) {
+      _fontFamily.putIfAbsent(element.languageCode, () => element.fontFamily);
+    });
     await _handleLocale(initLanguageCode, initCountryCode);
   }
 
@@ -98,4 +104,7 @@ class FlutterLocalization {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ];
+
+  /// Provide the font family by the current locale's language code
+  String? get fontFamily => _fontFamily[_currentLocale?.languageCode];
 }
