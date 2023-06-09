@@ -6,7 +6,7 @@ SDK [flutter_localizations](https://api.flutter.dev/flutter/flutter_localization
 itself. Follow the step below to use the package or
 checkout a small [example](https://pub.dev/packages/flutter_localization/example) project of the package.
 
-<a href="https://www.buymeacoffee.com/eamchanndara" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+<a href="https://www.buymeacoffee.com/eamchanndara"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=eamchanndara&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" /></a>
 
 # How To Use
 
@@ -88,6 +88,8 @@ ElevatedButton(
 AppLocale.title.getString(context);
 ```
 
+## Extras
+
 * You also can get the language name too. If you don't specify the language code for the function, it will return the
   language name depend on the current app locale
 
@@ -99,11 +101,19 @@ localization.getLanguageName(languageCode: 'ja');  // 日本語
 localization.getLanguageName();  // get language name depend on current app locale
 ```
 
+* If you need to use locale identifier in some case, you can get it from the current locale. The identifier format
+  is **[languageCode]_[countryCode]** (**en_US**). But if you don't provide the country code in
+  **MapLocale** this will return only **languageCode**.
+
+```
+localization.currentLocale.localeIdentifier;
+```
+
 # Some update note
 
-### Version 0.1.11
+* **Version 0.1.11**
 
-From version **0.1.11** on, you can provide the font family in the **MapLocale** model at the **init()** function that
+From this version on, you can provide the font family in the **MapLocale** model at the **init()** function that
 can be from [Assets](https://docs.flutter.dev/cookbook/design/fonts)
 or [GoogleFonts](https://pub.dev/packages/google_fonts) package.
 

@@ -19,8 +19,8 @@ class FlutterLocalization {
   /// The package delegate. This is private, only use in the package.
   late FlutterLocalizationDelegate _delegate;
 
-  /// The list of supported language code provide by the [init] function
-  List<String> _supportedLanguageCodes = const [];
+  /// The list of supported locale provide by the [init] function
+  List<Locale> _supportedLocales = [];
 
   /// The current locale of the app. It will change after [translate] called.
   Locale? _currentLocale;
@@ -40,43 +40,48 @@ class FlutterLocalization {
   Future<void> init({
     required List<MapLocale> mapLocales,
     required String initLanguageCode,
-    String? initCountryCode,
   }) async {
     FlutterLocalizationTranslator.instance.mapLocales = mapLocales;
-    _supportedLanguageCodes = mapLocales.map((e) => e.languageCode).toList();
-    mapLocales.forEach((element) {
-      _fontFamily.putIfAbsent(element.languageCode, () => element.fontFamily);
+    _supportedLocales = mapLocales.map((e) => e.locale).toList();
+    mapLocales.forEach((e) {
+      _fontFamily.putIfAbsent(e.languageCode, () => e.fontFamily);
     });
+    final initCountryCode = _getCountryCode(initLanguageCode);
     await _handleLocale(initLanguageCode, initCountryCode);
   }
 
   /// This will handle the locale of the app. Load the saved locale and init new
   /// delegate for the app localization.
-  Future<void> _handleLocale(
-    String initLanguageCode,
-    String? initCountryCode,
-  ) async {
-    _currentLocale = Locale(initLanguageCode, initCountryCode);
+  Future<void> _handleLocale(String languageCode, String? countryCode) async {
+    _currentLocale = Locale(languageCode, countryCode);
     _currentLocale = await PreferenceUtil.getInitLocale(
-      initLanguageCode,
-      initCountryCode,
+      languageCode,
+      countryCode,
     );
     _delegate = FlutterLocalizationDelegate(_currentLocale);
-    if (onTranslatedLanguage != null) onTranslatedLanguage!(_currentLocale);
+    onTranslatedLanguage?.call(_currentLocale);
   }
 
   /// Call this function at where you want to translate the app like by
   /// pressing the button or any actions.
   void translate(
     String languageCode, {
-    String countryCode = '',
     bool save = true,
   }) {
     if (languageCode == _currentLocale?.languageCode) return;
+    final countryCode = _getCountryCode(languageCode);
     if (save) PreferenceUtil.setLocale(languageCode, countryCode);
     _currentLocale = Locale(languageCode, countryCode);
     _delegate = FlutterLocalizationDelegate(_currentLocale);
-    if (onTranslatedLanguage != null) onTranslatedLanguage!(_currentLocale);
+    onTranslatedLanguage?.call(_currentLocale);
+  }
+
+  /// Get country code from the list of MapLocale provided by the [init] function
+  /// that base on language code
+  String? _getCountryCode(String languageCode) {
+    return _supportedLocales
+        .singleWhere((element) => element.languageCode == languageCode)
+        .countryCode;
   }
 
   /// This just call the getName() function from [FlutterLocalizationTranslator]
@@ -85,16 +90,16 @@ class FlutterLocalization {
       FlutterLocalizationTranslator.instance
           .getName(languageCode ?? _currentLocale!.languageCode);
 
-  /// Get the list of supported language code provide by the [init] function
-  List<String> get supportedLanguageCodes => _supportedLanguageCodes;
+  /// Get the list of supported language code provided by the [init] function
+  List<String> get supportedLanguageCodes =>
+      _supportedLocales.map((e) => e.languageCode).toList();
 
   /// Get the current locale of the app.
   Locale? get currentLocale => _currentLocale;
 
   /// Generate the supported locales for the app.
   /// This will use at the MaterialAap
-  Iterable<Locale> get supportedLocales =>
-      _supportedLanguageCodes.map<Locale>((language) => Locale(language));
+  Iterable<Locale> get supportedLocales => _supportedLocales;
 
   /// Apply all the needed delegate and the package delegate for the app.
   /// This will use at the MaterialApp

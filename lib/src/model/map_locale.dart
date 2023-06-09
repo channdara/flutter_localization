@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class MapLocale {
   /// Constructor of the model.
   const MapLocale(
@@ -5,7 +7,7 @@ class MapLocale {
     this.mapData, {
     this.countryCode,
     this.fontFamily,
-  });
+  }) : assert(languageCode != '');
 
   /// Language code. This will use to check with the supported language codes
   /// and find the data for localization.
@@ -19,4 +21,7 @@ class MapLocale {
 
   /// Font family for the language
   final String? fontFamily;
+
+  /// Create a Locale object from MapLocale object
+  Locale get locale => Locale(languageCode, countryCode);
 }

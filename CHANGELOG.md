@@ -1,3 +1,7 @@
+## 0.1.12
+
+* Add **LocaleExtension** for getting the locale identifier (en_US, km_KH, ja_JP, ect)
+
 ## 0.1.11
 
 * Add **fontFamily** param in **MapLocale** model for providing font family for each language (this field is optional)

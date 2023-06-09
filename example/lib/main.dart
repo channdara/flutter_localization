@@ -27,9 +27,24 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     _localization.init(
       mapLocales: [
-        const MapLocale('en', AppLocale.EN, fontFamily: 'Font EN'),
-        const MapLocale('km', AppLocale.KM, fontFamily: 'Font KM'),
-        const MapLocale('ja', AppLocale.JA, fontFamily: 'Font JA'),
+        const MapLocale(
+          'en',
+          AppLocale.EN,
+          countryCode: 'US',
+          fontFamily: 'Font EN',
+        ),
+        const MapLocale(
+          'km',
+          AppLocale.KM,
+          countryCode: 'KH',
+          fontFamily: 'Font KM',
+        ),
+        const MapLocale(
+          'ja',
+          AppLocale.JA,
+          countryCode: 'JP',
+          fontFamily: 'Font JA',
+        ),
       ],
       initLanguageCode: 'en',
     );
@@ -71,9 +86,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Current language is: ${_localization.getLanguageName()}'),
+            Text('Current Language: ${_localization.getLanguageName()}'),
             const SizedBox(height: 8.0),
             Text('Font Family: ${_localization.fontFamily}'),
+            const SizedBox(height: 8.0),
+            Text('Identifier: ${_localization.currentLocale.localeIdentifier}'),
             const SizedBox(height: 64.0),
             Row(
               children: [
