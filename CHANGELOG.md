@@ -1,3 +1,8 @@
+## 0.1.13
+
+* Added **Strings Util** and **Context Extension** for helping with localization text. Check the readme page at
+  the [Some update note] section.
+
 ## 0.1.12
 
 * Add **LocaleExtension** for getting the locale identifier (en_US, km_KH, ja_JP, ect)

@@ -3,8 +3,8 @@
 Flutter Localization is a package use for in-app localization with Map data. Easier and faster to implement. This
 package is inspired by the Flutter
 SDK [flutter_localizations](https://api.flutter.dev/flutter/flutter_localizations/flutter_localizations-library.html)
-itself. Follow the step below to use the package or
-checkout a small [example](https://pub.dev/packages/flutter_localization/example) project of the package.
+itself. Follow the step below to use the package, or you can
+check out a small [example](https://pub.dev/packages/flutter_localization/example) project of the package.
 
 <a href="https://www.buymeacoffee.com/eamchanndara"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=eamchanndara&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" /></a>
 
@@ -111,9 +111,9 @@ localization.currentLocale.localeIdentifier;
 
 # Some update note
 
-* **Version 0.1.11**
+### **Version 0.1.11**
 
-From this version on, you can provide the font family in the **MapLocale** model at the **init()** function that
+You can provide the font family in the **MapLocale** model at the **init()** function that
 can be from [Assets](https://docs.flutter.dev/cookbook/design/fonts)
 or [GoogleFonts](https://pub.dev/packages/google_fonts) package.
 
@@ -125,7 +125,7 @@ MapLocale('en', AppLocale.EN, fontFamily: 'MuseoSans');
 MapLocale('en', AppLocale.EN, fontFamily: GoogleFonts.lato().fontFamily);
 ```
 
-and provide the font family to the MaterialApp's ThemeData
+Lastly, provide the font family to the MaterialApp's ThemeData
 
 ```
 @override
@@ -137,4 +137,24 @@ Widget build(BuildContext context) {
         theme: ThemeData(fontFamily: localization.fontFamily),
     );
 }
+```
+
+### **Version 0.1.13**
+
+Added **Strings Util** and **Context Extension** for helping with localization text that are dynamic base on language.
+Check the usage below or the [example](https://pub.dev/packages/flutter_localization/example) here.
+
+As for **Strings Util**, it just formats string normally from the **list of arguments** to the **full text** string.
+
+```
+Strings.format('Hello %a, this is me %a.', ['Dara', 'Sopheak']);
+// Result: Hello Dara, this is me Sopheak.
+```
+
+As for **Context Extension**, the full text and arguments you provide, will use to check and get data from the string
+source. If the result is null, it will return the key that use to get the resource string.
+
+```
+context.formatString('This is %a package, version %a.', [AppLocale.title, 'LATEST'])
+// Result: This is Localization package, version LATEST.
 ```

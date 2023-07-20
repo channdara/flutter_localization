@@ -7,10 +7,20 @@ void main() {
 
 mixin AppLocale {
   static const String title = 'title';
+  static const String thisIs = 'thisIs';
 
-  static const Map<String, dynamic> EN = {title: 'Localization'};
-  static const Map<String, dynamic> KM = {title: 'ការធ្វើមូលដ្ឋានីយកម្ម'};
-  static const Map<String, dynamic> JA = {title: 'ローカリゼーション'};
+  static const Map<String, dynamic> EN = {
+    title: 'Localization',
+    thisIs: 'This is %a package, version %a.',
+  };
+  static const Map<String, dynamic> KM = {
+    title: 'ការធ្វើមូលដ្ឋានីយកម្ម',
+    thisIs: 'នេះគឺជាកញ្ចប់%a កំណែ%a.',
+  };
+  static const Map<String, dynamic> JA = {
+    title: 'ローカリゼーション',
+    thisIs: 'これは%aパッケージ、バージョン%aです。',
+  };
 }
 
 class MyApp extends StatefulWidget {
@@ -84,14 +94,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: Container(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Current Language: ${_localization.getLanguageName()}'),
-            const SizedBox(height: 8.0),
-            Text('Font Family: ${_localization.fontFamily}'),
-            const SizedBox(height: 8.0),
-            Text('Identifier: ${_localization.currentLocale.localeIdentifier}'),
-            const SizedBox(height: 64.0),
             Row(
               children: [
                 Expanded(
@@ -122,8 +125,61 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 16.0),
+            ItemWidget(
+              title: 'Current Language',
+              content: _localization.getLanguageName(),
+            ),
+            ItemWidget(
+              title: 'Font Family',
+              content: _localization.fontFamily,
+            ),
+            ItemWidget(
+              title: 'Locale Identifier',
+              content: _localization.currentLocale.localeIdentifier,
+            ),
+            ItemWidget(
+              title: 'String Format',
+              content: Strings.format(
+                'Hello %a, this is me %a.',
+                ['Dara', 'Sopheak'],
+              ),
+            ),
+            ItemWidget(
+              title: 'Context Format String',
+              content: context.formatString(
+                AppLocale.thisIs,
+                [AppLocale.title, 'LATEST'],
+              ),
+            ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class ItemWidget extends StatelessWidget {
+  const ItemWidget({
+    super.key,
+    required this.title,
+    required this.content,
+  });
+
+  final String? title;
+  final String? content;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: Text(title ?? '')),
+          const Text(' : '),
+          Expanded(child: Text(content ?? '')),
+        ],
       ),
     );
   }
