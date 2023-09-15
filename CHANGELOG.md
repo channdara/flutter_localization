@@ -1,3 +1,7 @@
+## 0.1.14
+
+* increase android minSdk support to 21 and add support to higher gradle build tools version
+
 ## 0.1.13
 
 * Added **Strings Util** and **Context Extension** for helping with localization text. Check the readme page at
