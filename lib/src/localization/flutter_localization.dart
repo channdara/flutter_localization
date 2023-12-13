@@ -99,6 +99,8 @@ class FlutterLocalization {
         .countryCode;
   }
 
+  /// Get script code from the list of MapLocale provided by the [init] function
+  /// that base on language code
   String? _getScriptCode(String languageCode) {
     return _supportedLocales
         .singleWhere((element) => element.languageCode == languageCode)

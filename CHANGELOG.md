@@ -1,6 +1,12 @@
+## 0.2.0
+
+* Added **scriptCode** support in the **MapLocale** model. Thanks to **@dujiepeng** for the suggestion
+* Refactor all **Locale** object to use **Locale.fromSubtags**
+* Update some dependencies use to support the package
+
 ## 0.1.14
 
-* increase android minSdk support to 21 and add support to higher gradle build tools version
+* Increase android minSdk support to 21 and add support to higher gradle build tools version
 
 ## 0.1.13
 
