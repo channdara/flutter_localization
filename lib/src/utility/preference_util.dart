@@ -40,13 +40,13 @@ mixin PreferenceUtil {
   /// Generate the current locale which will use for displaying the language
   /// which the app is change during translate() function called.
   static Future<Locale?> getInitLocale(
-    String? languageCode,
+    String languageCode,
     String? countryCode,
     String? scriptCode,
   ) async {
     return await _getLocale() ??
         Locale.fromSubtags(
-          languageCode: languageCode ?? 'en',
+          languageCode: languageCode,
           countryCode: countryCode,
           scriptCode: scriptCode,
         );
