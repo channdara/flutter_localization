@@ -7,6 +7,7 @@ class MapLocale {
     this.mapData, {
     this.countryCode,
     this.fontFamily,
+    this.scriptCode,
   }) : assert(languageCode != '');
 
   /// Language code. This will use to check with the supported language codes
@@ -22,6 +23,13 @@ class MapLocale {
   /// Font family for the language
   final String? fontFamily;
 
+  /// The script subtag for the locale.
+  final String? scriptCode;
+
   /// Create a Locale object from MapLocale object
-  Locale get locale => Locale(languageCode, countryCode);
+  Locale get locale => Locale.fromSubtags(
+        languageCode: languageCode,
+        countryCode: countryCode,
+        scriptCode: scriptCode,
+      );
 }

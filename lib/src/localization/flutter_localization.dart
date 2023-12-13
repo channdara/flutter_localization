@@ -47,16 +47,26 @@ class FlutterLocalization {
       _fontFamily.putIfAbsent(e.languageCode, () => e.fontFamily);
     });
     final initCountryCode = _getCountryCode(initLanguageCode);
-    await _handleLocale(initLanguageCode, initCountryCode);
+    final initScriptCode = _getScriptCode(initLanguageCode);
+    await _handleLocale(initLanguageCode, initCountryCode, initScriptCode);
   }
 
   /// This will handle the locale of the app. Load the saved locale and init new
   /// delegate for the app localization.
-  Future<void> _handleLocale(String languageCode, String? countryCode) async {
-    _currentLocale = Locale(languageCode, countryCode);
+  Future<void> _handleLocale(
+    String languageCode,
+    String? countryCode,
+    String? scriptCode,
+  ) async {
+    _currentLocale = Locale.fromSubtags(
+      languageCode: languageCode,
+      countryCode: countryCode,
+      scriptCode: scriptCode,
+    );
     _currentLocale = await PreferenceUtil.getInitLocale(
       languageCode,
       countryCode,
+      scriptCode,
     );
     _delegate = FlutterLocalizationDelegate(_currentLocale);
     onTranslatedLanguage?.call(_currentLocale);
@@ -70,8 +80,13 @@ class FlutterLocalization {
   }) {
     if (languageCode == _currentLocale?.languageCode) return;
     final countryCode = _getCountryCode(languageCode);
-    if (save) PreferenceUtil.setLocale(languageCode, countryCode);
-    _currentLocale = Locale(languageCode, countryCode);
+    final scriptCode = _getScriptCode(languageCode);
+    if (save) PreferenceUtil.setLocale(languageCode, countryCode, scriptCode);
+    _currentLocale = Locale.fromSubtags(
+      languageCode: languageCode,
+      countryCode: countryCode,
+      scriptCode: scriptCode,
+    );
     _delegate = FlutterLocalizationDelegate(_currentLocale);
     onTranslatedLanguage?.call(_currentLocale);
   }
@@ -82,6 +97,12 @@ class FlutterLocalization {
     return _supportedLocales
         .singleWhere((element) => element.languageCode == languageCode)
         .countryCode;
+  }
+
+  String? _getScriptCode(String languageCode) {
+    return _supportedLocales
+        .singleWhere((element) => element.languageCode == languageCode)
+        .scriptCode;
   }
 
   /// This just call the getName() function from [FlutterLocalizationTranslator]
