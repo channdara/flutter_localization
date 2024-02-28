@@ -10,7 +10,7 @@ mixin PreferenceUtil {
   static const String _script_code = 'translator_script_code';
 
   /// Load the saved locale in the shared_preferences.
-  static Future<Locale?> _getLocale() async {
+  static Future<Locale?> getLocale() async {
     final pref = await SharedPreferences.getInstance();
     final prefData = pref.getString(_locale_key);
     if (prefData == null) return null;
@@ -35,20 +35,5 @@ mixin PreferenceUtil {
       _script_code: scriptCode,
     });
     return pref.setString(_locale_key, value);
-  }
-
-  /// Generate the current locale which will use for displaying the language
-  /// which the app is change during translate() function called.
-  static Future<Locale?> getInitLocale(
-    String languageCode,
-    String? countryCode,
-    String? scriptCode,
-  ) async {
-    return await _getLocale() ??
-        Locale.fromSubtags(
-          languageCode: languageCode,
-          countryCode: countryCode,
-          scriptCode: scriptCode,
-        );
   }
 }

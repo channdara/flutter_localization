@@ -6,10 +6,12 @@ import '../data/language_name.dart';
 import '../model/map_locale.dart';
 
 class FlutterLocalizationTranslator {
-  FlutterLocalizationTranslator._singleton();
+  /// Private instance constructor.
+  FlutterLocalizationTranslator._instance();
 
+  /// The instance object of [FlutterLocalizationTranslator] class.
   static final FlutterLocalizationTranslator instance =
-      FlutterLocalizationTranslator._singleton();
+      FlutterLocalizationTranslator._instance();
 
   static Map<String, dynamic> _string = {};
   static List<MapLocale> _mapLocales = [];

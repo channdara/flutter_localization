@@ -27,6 +27,15 @@ mixin AppLocale {
 
 ## Project configuration
 
+* Ensure plugin initialize. Update main function into async function, add **WidgetsFlutterBinding.ensureInitialized()** and **await FlutterLocalization.instance.ensureInitialized()** before **runApp()** function like below.
+
+```
+Future<void> main() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await FlutterLocalization.instance.ensureInitialized();
+    runApp(const MyApp());
+}
+```
 * Initialize the **FlutterLocalization** object (this can be local or global, up to you)
 
 ```
