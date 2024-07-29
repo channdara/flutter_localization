@@ -1,29 +1,38 @@
 ## 0.3.0
 
-* Breaking change: added **ensureInitialized()** function (check more information at README or EXAMPLE)
+* Breaking change: added **ensureInitialized()** function (check more
+  information at README or EXAMPLE)
+
+## 0.2.1
+
+* Update some dependencies use to support the package
 
 ## 0.2.0
 
-* Added **scriptCode** support in the **MapLocale** model. Thanks to **@dujiepeng** for the suggestion
+* Added **scriptCode** support in the **MapLocale** model. Thanks to
+  **@dujiepeng** for the suggestion
 * Refactor all **Locale** object to use **Locale.fromSubtags**
 * Update some dependencies use to support the package
 
 ## 0.1.14
 
-* Increase android minSdk support to 21 and add support to higher gradle build tools version
+* Increase android minSdk support to 21 and add support to higher gradle build
+  tools version
 
 ## 0.1.13
 
-* Added **Strings Util** and **Context Extension** for helping with localization text. Check the readme page at
-  the [Some update note] section.
+* Added **StringsUtil** and **ContextExtension** for helping with localization
+  text. Check the readme page at the [Some update note] section.
 
 ## 0.1.12
 
-* Add **LocaleExtension** for getting the locale identifier (en_US, km_KH, ja_JP, ect)
+* Add **LocaleExtension** for getting the locale identifier (en_US, km_KH,
+  ja_JP, ect)
 
 ## 0.1.11
 
-* Add **fontFamily** param in **MapLocale** model for providing font family for each language (this field is optional)
+* Add **fontFamily** param in **MapLocale** model for providing font family for
+  each language (this field is optional)
 * Update some dependencies use to support the package
 
 ## 0.1.10
@@ -51,22 +60,24 @@
 
 ## 0.1.5
 
-* Add condition to the **translate()** function to prevent it recall on the same provided **languageCode**
+* Add condition to the **translate()** function to prevent it recall on the same
+  provided **languageCode**
 * Update some dependencies use to support the package
 * Small make-change on **example** file
 
 ## 0.1.4
 
-* I have found some issues and a little bit of low performance when using the **load from json file** method, so I
-  decided to remove it for better usage
-* Remove the old **init()** function and rename the **initWithMap()** to **init()** instead
+* I have found some issues and a little bit of low performance when using the
+  **load from json file** method, so I decided to remove it for better usage
+* Remove the old **init()** function and rename the **initWithMap()** to
+  **init()** instead
 
 ## 0.1.3
 
-* Optimize some code and allowed the **onTranslatedLanguage** callback to be null. Thanks to **@Hasankanso** for the
-  suggestion
-* NOTE: **init()** function will be removed soon for better load time and performance, please use **initWithMap()**
-  instead
+* Optimize some code and allowed the **onTranslatedLanguage** callback to be
+  null. Thanks to **@Hasankanso** for the suggestion
+* NOTE: **init()** function will be removed soon for better load time and
+  performance, please use **initWithMap()** instead
 
 ## 0.1.2
 
@@ -86,12 +97,14 @@
 
 ## 0.0.11
 
-* Add the possibility to do localization with **Map<String, dynamic>** instead of **json file**. Check the **README** or
-  **example** for more information with the **initWithMap()** function
+* Add the possibility to do localization with **Map<String, dynamic>** instead
+  of **json file**. Check the **README** or **example** for more information
+  with the **initWithMap()** function
 
 ## 0.0.10
 
-* Solve the problem where **currentLocale** is null when try to call at the **main.dart** (after **initState()**)
+* Solve the problem where **currentLocale** is null when try to call at the
+  **main.dart** after **initState()**
 
 ## 0.0.9
 
@@ -109,7 +122,8 @@
 
 * Added get language name feature
 * In **init()** function, rename **languageCodes** to **supportedLanguageCodes**
-* Added **save** parameter in **translate()** function, so you can decide to save the cache or not
+* Added **save** parameter in **translate()** function, so you can decide to
+  save the cache or not
 
 ## 0.0.5
 
@@ -117,7 +131,8 @@
 
 ## 0.0.4
 
-* Add language cache (the selected language will save and load when the app is open)
+* Add language cache (the selected language will save and load when the app is
+  open)
 
 ## 0.0.3
 
