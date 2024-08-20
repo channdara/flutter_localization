@@ -105,7 +105,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                   ),
                 ),
-                const SizedBox(width: 8.0),
+                const SizedBox(width: 16.0),
                 Expanded(
                   child: ElevatedButton(
                     child: const Text('ភាសាខ្មែរ'),
@@ -114,7 +114,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                   ),
                 ),
-                const SizedBox(width: 8.0),
+                const SizedBox(width: 16.0),
                 Expanded(
                   child: ElevatedButton(
                     child: const Text('日本語'),
