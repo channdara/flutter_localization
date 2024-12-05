@@ -3,6 +3,16 @@
 * Breaking change: added **ensureInitialized()** function (check more
   information at README or EXAMPLE)
 
+## 0.2.3
+
+* Update some dependencies use to support the package
+* Update Android Gradle, Java and Kotlin version
+* Increase compileSdkVersion to 34
+
+## 0.2.2
+
+* Fixed issue of flutter web registration: error import dart:html
+
 ## 0.2.1
 
 * Update some dependencies use to support the package
@@ -22,7 +32,7 @@
 ## 0.1.13
 
 * Added **StringsUtil** and **ContextExtension** for helping with localization
-  text. Check the readme page at the [Some update note] section.
+  text. Check the readme page at [Some update note] section.
 
 ## 0.1.12
 

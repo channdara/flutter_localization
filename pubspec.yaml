@@ -5,9 +5,7 @@ homepage: https://github.com/channdara/flutter_localization
 issue_tracker: https://github.com/channdara/flutter_localization/issues
 
 scripts:
-  # rps test
   test: 'flutter pub publish --dry-run'
-  # rps publish
   publish: 'flutter pub publish'
 
 environment:
@@ -22,14 +20,15 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
+  web: ^1.1.0
+  shared_preferences: ^2.3.3
   plugin_platform_interface: ^2.1.8
-  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
 flutter:
   plugin:
