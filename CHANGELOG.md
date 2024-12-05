@@ -1,3 +1,9 @@
+## 0.2.3
+
+* Update some dependencies use to support the package
+* Update Android Gradle, Java and Kotlin version
+* Increase compileSdkVersion to 34
+
 ## 0.2.2
 
 * Fixed issue of flutter web registration: error import dart:html
