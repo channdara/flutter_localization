@@ -23,16 +23,12 @@ mixin PreferenceUtil {
   }
 
   /// Save the locale value to the shared_preferences.
-  static Future<bool> setLocale(
-    String languageCode,
-    String? countryCode,
-    String? scriptCode,
-  ) async {
+  static Future<bool> setLocale(Locale? locale) async {
     final pref = await SharedPreferences.getInstance();
     final value = json.encode({
-      _language_code: languageCode,
-      _country_code: countryCode,
-      _script_code: scriptCode,
+      _language_code: locale?.languageCode,
+      _country_code: locale?.countryCode,
+      _script_code: locale?.scriptCode,
     });
     return pref.setString(_locale_key, value);
   }

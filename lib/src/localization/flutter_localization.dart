@@ -28,6 +28,9 @@ class FlutterLocalization {
   /// The current locale of the app. It will change after [translate] called.
   Locale? _currentLocale;
 
+  /// The boolean indicate that locale is load from shared preferences.
+  bool _localeFromPreferences = false;
+
   /// Callback for the translation. This will call after the [translate]
   /// function is called.
   TranslatorCallback? onTranslatedLanguage;
@@ -38,15 +41,18 @@ class FlutterLocalization {
   /// To ensure the currentLocale object is provided before runApp
   Future<void> ensureInitialized() async {
     final locale = await PreferenceUtil.getLocale();
+    _localeFromPreferences = locale != null;
     _currentLocale = locale ?? _platformLocale();
   }
 
   /// Get default locale object from string localeName of Platform class
   Locale _platformLocale() {
-    final locale = Platform.localeName;
-    final languageCode = locale.substring(0, 2);
-    final countryCode = locale.substring(3, 5);
-    return Locale(languageCode, countryCode);
+    final locale = Platform.localeName.split('_');
+    return Locale.fromSubtags(
+      languageCode: locale.first,
+      countryCode: locale.last,
+      scriptCode: locale.length > 2 ? locale[1] : null,
+    );
   }
 
   /// Initialize the list of mapLocale (see [MapLocale] model for info)
@@ -54,24 +60,32 @@ class FlutterLocalization {
   ///
   /// initLanguageCode mostly passed from the shared_preferences for checking
   /// the init language to display when the app is start up.
-  Future<void> init({
+  void init({
     required List<MapLocale> mapLocales,
     required String initLanguageCode,
-  }) async {
+  }) {
     if (_currentLocale == null) throw const EnsureInitializeException();
     FlutterLocalizationTranslator.instance.mapLocales = mapLocales;
     _supportedLocales = mapLocales.map((e) => e.locale).toList();
     mapLocales.forEach((e) {
       _fontFamily.putIfAbsent(e.languageCode, () => e.fontFamily);
     });
-    _handleLocale();
+    if (!_localeFromPreferences) {
+      _currentLocale = _generateLocale(initLanguageCode);
+    }
+    _reload();
   }
 
-  /// This will handle the locale of the app. Load the saved locale and init new
-  /// delegate for the app localization.
-  void _handleLocale() {
-    _delegate = FlutterLocalizationDelegate(_currentLocale);
-    onTranslatedLanguage?.call(_currentLocale);
+  /// This will generate new locale base on provided languageCode. The locale
+  /// data is getting from [_supportedLocales] list.
+  Locale _generateLocale(String languageCode) {
+    final countryCode = _getCountryCode(languageCode);
+    final scriptCode = _getScriptCode(languageCode);
+    return Locale.fromSubtags(
+      languageCode: languageCode,
+      countryCode: countryCode,
+      scriptCode: scriptCode,
+    );
   }
 
   /// Call this function at where you want to translate the app like by
@@ -81,14 +95,13 @@ class FlutterLocalization {
     bool save = true,
   }) {
     if (languageCode == _currentLocale?.languageCode) return;
-    final countryCode = _getCountryCode(languageCode);
-    final scriptCode = _getScriptCode(languageCode);
-    if (save) PreferenceUtil.setLocale(languageCode, countryCode, scriptCode);
-    _currentLocale = Locale.fromSubtags(
-      languageCode: languageCode,
-      countryCode: countryCode,
-      scriptCode: scriptCode,
-    );
+    _currentLocale = _generateLocale(languageCode);
+    if (save) PreferenceUtil.setLocale(_currentLocale);
+    _reload();
+  }
+
+  /// Reload the delegate with new locale and call the callback for app reload.
+  void _reload() {
     _delegate = FlutterLocalizationDelegate(_currentLocale);
     onTranslatedLanguage?.call(_currentLocale);
   }
