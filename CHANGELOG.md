@@ -1,7 +1,6 @@
 ## 0.3.0
 
-* Breaking change: added **ensureInitialized()** function (check more
-  information at README or EXAMPLE)
+* Breaking change: added **ensureInitialized()** function (check more information at README or EXAMPLE)
 
 ## 0.2.3
 
