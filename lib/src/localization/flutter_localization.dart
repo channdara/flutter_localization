@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:universal_io/io.dart';
 
 import '../../flutter_localization.dart';
 import '../model/ensure_initialized_exception.dart';
