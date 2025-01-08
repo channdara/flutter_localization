@@ -1,3 +1,8 @@
+## 0.3.1
+
+* Merge PR [#34](https://github.com/channdara/flutter_localization/pull/34) from **@probepark**: Fix issue with Platform
+  Locale for web support
+
 ## 0.3.0
 
 * Breaking change: added **ensureInitialized()** function (check more information at README or EXAMPLE)

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:universal_io/io.dart';
@@ -46,7 +45,7 @@ class FlutterLocalization {
 
   /// Get default locale object from string localeName of Platform class
   Locale _platformLocale() {
-    final locale = Platform.localeName.split('_');
+    final locale = Platform.localeName.split(RegExp(r'[-_]'));
     return Locale.fromSubtags(
       languageCode: locale.first,
       countryCode: locale.last,
