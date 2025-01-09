@@ -7,20 +7,23 @@ issue_tracker: https://github.com/channdara/flutter_localization/issues
 scripts:
   test: 'flutter pub publish --dry-run'
   publish: 'flutter pub publish'
+  upgrade:
+    depen: 'flutter pub add web intl universal_io shared_preferences plugin_platform_interface'
+    devdepen: 'flutter pub add --dev flutter_lints'
+    all: 'rps upgrade depen && rps upgrade devdepen'
 
 environment:
-  sdk: '>=2.12.0 <4.0.0'
-  flutter: '>=1.12.13'
+  sdk: '>=2.17.0 <4.0.0'
+  flutter: '>=3.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  flutter_localizations:
-    sdk: flutter
 
   web: ^1.1.0
+  intl: ^0.20.1
   universal_io: ^2.2.2
   shared_preferences: ^2.3.5
   plugin_platform_interface: ^2.1.8

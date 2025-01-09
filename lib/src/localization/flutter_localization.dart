@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:universal_io/io.dart';
 
 import '../../flutter_localization.dart';
+import '../delegate/cupertino_localizations.dart';
+import '../delegate/material_localizations.dart';
+import '../delegate/widgets_localizations.dart';
 import '../model/ensure_initialized_exception.dart';
 import '../utility/preference_util.dart';
 import 'flutter_localization_delegate.dart';
