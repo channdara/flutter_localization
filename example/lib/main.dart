@@ -71,6 +71,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: _localization.navigatorKey,
       supportedLocales: _localization.supportedLocales,
       localizationsDelegates: _localization.localizationsDelegates,
       home: const SettingsScreen(),
@@ -92,7 +93,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocale.title.getString(context))),
+      appBar: AppBar(title: Text(AppLocale.title.tr)),
       body: Container(
         padding: const EdgeInsets.all(16.0),
         child: Column(

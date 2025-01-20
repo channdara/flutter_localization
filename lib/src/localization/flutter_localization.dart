@@ -22,6 +22,10 @@ class FlutterLocalization {
   /// The package delegate. This is private, only use in the package.
   FlutterLocalizationDelegate _delegate = FlutterLocalizationDelegate(null);
 
+  /// This private key is used to gain access to the state of a Navigator widget
+  /// from anywhere in the application.
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+
   /// The list of supported locale provide by the [init] function
   List<Locale> _supportedLocales = [];
 
@@ -150,4 +154,8 @@ class FlutterLocalization {
 
   /// Provide the font family by the current locale's language code
   String? get fontFamily => _fontFamily[_currentLocale?.languageCode];
+
+  /// This public key is getting the reference from the private key
+  /// to avoid overriding the key at some point.
+  GlobalKey<NavigatorState> get navigatorKey => _navigatorKey;
 }

@@ -39,7 +39,7 @@ class FlutterLocalizationTranslator {
       _string[key] == null ? '$key not found' : _string[key].toString();
 
   /// This function is the same as [getString] above. But instead of returning
-  /// 'key not found', this will return onl the key
+  /// 'key not found', this will return only the key
   String getStringOrKey(String key) =>
       _string[key] == null ? key : _string[key].toString();
 
