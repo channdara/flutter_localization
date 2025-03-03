@@ -20,7 +20,6 @@ class FlutterLocalizationPlugin : public flutter::Plugin {
   FlutterLocalizationPlugin(const FlutterLocalizationPlugin&) = delete;
   FlutterLocalizationPlugin& operator=(const FlutterLocalizationPlugin&) = delete;
 
- private:
   // Called when a method is called on this plugin's channel from Dart.
   void HandleMethodCall(
       const flutter::MethodCall<flutter::EncodableValue> &method_call,

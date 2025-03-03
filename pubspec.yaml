@@ -9,7 +9,7 @@ scripts:
   publish: 'flutter pub publish'
 
 environment:
-  sdk: '>=2.12.0 <4.0.0'
+  sdk: ^2.12.0
   flutter: '>=1.12.13'
 
 dependencies:
@@ -39,12 +39,12 @@ flutter:
         pluginClass: FlutterLocalizationPlugin
       ios:
         pluginClass: FlutterLocalizationPlugin
-      web:
-        pluginClass: FlutterLocalizationWeb
-        fileName: flutter_localization_web.dart
       linux:
         pluginClass: FlutterLocalizationPlugin
       macos:
         pluginClass: FlutterLocalizationPlugin
       windows:
         pluginClass: FlutterLocalizationPluginCApi
+      web:
+        pluginClass: FlutterLocalizationWeb
+        fileName: flutter_localization_web.dart
