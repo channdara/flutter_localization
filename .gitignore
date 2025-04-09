@@ -1,3 +1,6 @@
+# Do not remove or rename entries in this file, only add new ones
+# See https://github.com/flutter/flutter/issues/128635 for more context.
+
 # Miscellaneous
 *.class
 *.lock
@@ -20,18 +23,31 @@
 .classpath
 .project
 .settings/
-.vscode/
+.vscode/*
+.ccls-cache
+
+# This file, on the master branch, should never exist or be checked-in.
+#
+# On a *final* release branch, that is, what will ship to stable or beta, the
+# file can be force added (git add --force) and checked-in in order to effectively
+# "pin" the engine artifact version so the flutter tool does not need to use git
+# to determine the engine artifacts.
+#
+# See https://github.com/flutter/flutter/blob/main/docs/tool/Engine-artifacts.md.
+/bin/internal/engine.version
 
 # Flutter repo-specific
 /bin/cache/
 /bin/internal/bootstrap.bat
 /bin/internal/bootstrap.sh
+/bin/internal/engine.realm
 /bin/mingit/
 /dev/benchmarks/mega_gallery/
 /dev/bots/.recipe_deps
 /dev/bots/android_tools/
 /dev/devicelab/ABresults*.json
 /dev/docs/doc/
+/dev/docs/api_docs.zip
 /dev/docs/flutter.docs.zip
 /dev/docs/lib/
 /dev/docs/pubspec.yaml
@@ -51,6 +67,7 @@ analysis_benchmark.json
 .flutter-plugins-dependencies
 **/generated_plugin_registrant.dart
 .packages
+.pub-preload-cache/
 .pub-cache/
 .pub/
 build/
@@ -65,10 +82,11 @@ unlinked_spec.ds
 **/android/captures/
 **/android/gradlew
 **/android/gradlew.bat
-**/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
 **/android/key.properties
 *.jks
+local.properties
+**/android/app/.cxx
 
 # iOS/XCode related
 **/ios/**/*.mode1v3
@@ -108,8 +126,16 @@ unlinked_spec.ds
 **/xcuserdata/
 
 # Windows
+**/windows/flutter/ephemeral/
 **/windows/flutter/generated_plugin_registrant.cc
 **/windows/flutter/generated_plugin_registrant.h
+**/windows/flutter/generated_plugins.cmake
+
+# Linux
+**/linux/flutter/ephemeral/
+**/linux/flutter/generated_plugin_registrant.cc
+**/linux/flutter/generated_plugin_registrant.h
+**/linux/flutter/generated_plugins.cmake
 
 # Coverage
 coverage/
@@ -124,3 +150,12 @@ app.*.symbols
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 !/dev/ci/**/Gemfile.lock
+!.vscode/settings.json
+
+# Monorepo
+.cipd
+.gclient
+.gclient_entries
+.python-version
+.gclient_previous_custom_vars
+.gclient_previous_sync_commits

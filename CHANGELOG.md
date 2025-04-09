@@ -1,3 +1,8 @@
+## 0.3.2
+
+* Update environment sdk to ^3.0.0
+* Update some dependencies use to support the package
+
 ## 0.3.1
 
 * Merge PR [#34](https://github.com/channdara/flutter_localization/pull/34) from **@probepark**: Fix issue with Platform
