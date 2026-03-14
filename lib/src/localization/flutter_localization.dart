@@ -58,25 +58,72 @@ class FlutterLocalization {
     );
   }
 
-  /// Initialize the list of mapLocale (see [MapLocale] model for info)
-  /// and initLanguageCode code when the app is start up. Both field will required.
+  /// Initialize the localization configuration.
   ///
-  /// initLanguageCode mostly passed from the shared_preferences for checking
-  /// the init language to display when the app is start up.
+  /// When [source] is [LocalizationSource.map], provide [mapLocales] which
+  /// contain in-memory string maps for each supported language.
+  ///
+  /// When [source] is [LocalizationSource.jsonAsset], provide [jsonLocales]
+  /// which describe each supported locale and its JSON asset path.
+  ///
+  /// The [initLanguageCode] is usually loaded from shared preferences to
+  /// determine the initial language when the app starts for the first time.
   void init({
-    required List<MapLocale> mapLocales,
     required String initLanguageCode,
+    List<MapLocale>? mapLocales,
+    LocalizationSource source = LocalizationSource.map,
+    List<JsonLocale>? jsonLocales,
   }) {
     if (_currentLocale == null) throw const EnsureInitializeException();
-    FlutterLocalizationTranslator.instance.mapLocales = mapLocales;
-    _supportedLocales = mapLocales.map((e) => e.locale).toList();
-    mapLocales.forEach((e) {
-      _fontFamily.putIfAbsent(e.languageCode, () => e.fontFamily);
-    });
+    _supportedLocales = <Locale>[];
+    _fontFamily.clear();
+    switch (source) {
+      case LocalizationSource.map:
+        _configureFromMapLocales(mapLocales ?? <MapLocale>[]);
+      case LocalizationSource.jsonAsset:
+        _configureFromJsonLocales(jsonLocales ?? <JsonLocale>[]);
+    }
     if (!_localeFromPreferences) {
       _currentLocale = _generateLocale(initLanguageCode);
     }
+    // if (_currentLocale != null && source == LocalizationSource.jsonAsset) {
+    //   await FlutterLocalizationTranslator.instance.load(_currentLocale!);
+    // }
     _reload();
+  }
+
+  /// Configure localization using in-memory [MapLocale] definitions.
+  ///
+  /// This method populates the supported locales and optional font families
+  /// based on the provided [locales], and forwards the configuration to
+  /// [FlutterLocalizationTranslator] so it can resolve string values at
+  /// runtime.
+  void _configureFromMapLocales(List<MapLocale> locales) {
+    FlutterLocalizationTranslator.instance.mapLocales = locales;
+    _supportedLocales = locales.map((e) => e.locale).toList();
+    for (final locale in locales) {
+      _fontFamily.putIfAbsent(locale.languageCode, () => locale.fontFamily);
+    }
+  }
+
+  /// Configure localization using JSON-backed [JsonLocale] definitions.
+  ///
+  /// Each [JsonLocale] describes a language code, optional region/script, an
+  /// optional font family, and the asset path to the JSON file that contains
+  /// the translations. This method validates the input, updates the supported
+  /// locales and font families, and passes the configuration to
+  /// [FlutterLocalizationTranslator].
+  void _configureFromJsonLocales(List<JsonLocale> locales) {
+    if (locales.isEmpty) {
+      throw ArgumentError(
+        'jsonLocales must be provided when using LocalizationSource.jsonAsset',
+      );
+    }
+    FlutterLocalizationTranslator.instance.jsonLocales = locales;
+    _supportedLocales = locales.map((e) => e.locale).toList();
+    for (final locale in locales) {
+      _fontFamily.putIfAbsent(locale.languageCode, () => locale.fontFamily);
+    }
   }
 
   /// This will generate new locale base on provided languageCode. The locale

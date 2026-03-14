@@ -1,28 +1,28 @@
 # Flutter Localization
 
-Flutter Localization is a package use for in-app localization with Map data. Easier and faster to implement. This
-package is inspired by the Flutter
+Flutter Localization is a package used for in-app localization with **Map data** or **JSON assets**.
+It is designed to be easy and fast to implement. This package is inspired by the Flutter
 SDK [flutter_localizations](https://api.flutter.dev/flutter/flutter_localizations/flutter_localizations-library.html)
-itself. Follow the step below to use the package, or you can
-check out a small [example](https://pub.dev/packages/flutter_localization/example) project of the package.
+itself. Follow the steps below to use the package, or you can check out a
+small [example](https://pub.dev/packages/flutter_localization/example) project of the package.
 
 <a href="https://www.buymeacoffee.com/eamchanndara"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=eamchanndara&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" /></a>
 <a href="https://ko-fi.com/eamchanndara" target='_blank'><img height='50' style='border:0px;height:50px;' src='https://storage.ko-fi.com/cdn/kofi5.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
-# Break Change
+# Breaking changes
 
-* From version 0.3.0 up, there a major update that break the code in the initialize flow. Please re-check the **Project
-  Configuration** section to see more detail of migration from version **0.2** to **0.3**. Don't worry, there's only few
-  things to changed and add.
+* From version 0.3.0 up, there is a major update that breaks the code in the initialize flow.
+  Please re-check the **Project Configuration** section to see more detail of migration from version
+  **0.2** to **0.3**. Don't worry, there are only a few things to change and add.
 
 # How To Use
 
 ## Prepare language source (Map<String, dynamic>)
 
-Create a dart file which will contain all the Map data of the locale language your app need. You can change the file
-name, class name, and file path whatever you like. Example:
+Create a dart file which will contain all the Map data of the locale language your app need. You can
+change the file name, class name, and file path whatever you like. Example:
 
-```
+```dart
 mixin AppLocale {
   static const String title = 'title';
 
@@ -32,10 +32,36 @@ mixin AppLocale {
 }
 ```
 
+## Prepare language source (JSON assets)
+
+You can also store your translations in JSON files and load them via assets. For example, create
+`assets/i18n/en.json`:
+
+```json
+{
+  "title": "Localization"
+}
+```
+
+Then declare the assets in your `pubspec.yaml`:
+
+```yaml
+flutter:
+  assets:
+    - assets/i18n/en.json
+    # - assets/i18n/km.json
+    # - assets/i18n/ja.json
+```
+
+See the **Project configuration** section below for how to wire JSON into the package using
+`JsonLocale`.
+
 ## Project configuration
 
-* Ensure plugin initialize. Update main function into async function, add **WidgetsFlutterBinding.ensureInitialized()**
-  and **await FlutterLocalization.instance.ensureInitialized()** before **runApp()** function like below.
+* Ensure plugin initialize. Update main function into async function, add *
+  *WidgetsFlutterBinding.ensureInitialized()**
+  and **await FlutterLocalization.instance.ensureInitialized()** before **runApp()** function like
+  below.
 
 ```
 Future<void> main() async {
@@ -51,27 +77,45 @@ Future<void> main() async {
 final FlutterLocalization localization = FlutterLocalization.instance;
 ```
 
-* Init the list of **MapLocale** and startup language for the app. This has to be done only at the **main.dart** or the
-  **MaterialApp** in your project.
+* Init the list of **MapLocale** or **JsonLocale** and startup language for the app. This has to be
+  done only at the
+  **main.dart** or the **MaterialApp** in your project.
 
-```
+```dart
 @override
 void initState() {
-    localization.init(
-        mapLocales: [
-            const MapLocale('en', AppLocale.EN),
-            const MapLocale('km', AppLocale.KM),
-            const MapLocale('ja', AppLocale.JA),
-        ],
-        initLanguageCode: 'en',
-    );
-    localization.onTranslatedLanguage = _onTranslatedLanguage;
-    super.initState();
+  localization.onTranslatedLanguage = _onTranslatedLanguage;
+  _initializeLocalization();
+  super.initState();
 }
 
-// the setState function here is a must to add
+Future<void> _initializeLocalization() async {
+  // Map-based configuration
+  await localization.init(
+    initLanguageCode: 'en',
+    source: LocalizationSource.map,
+    mapLocales: const [
+      MapLocale('en', AppLocale.EN),
+      MapLocale('km', AppLocale.KM),
+      MapLocale('ja', AppLocale.JA),
+    ],
+  );
+
+  // Or JSON-based configuration using JsonLocale:
+  // await localization.init(
+  //   initLanguageCode: 'en',
+  //   source: LocalizationSource.jsonAsset,
+  //   jsonLocales: const [
+  //     JsonLocale('en', 'assets/i18n/en.json'),
+  //     JsonLocale('km', 'assets/i18n/km.json'),
+  //     JsonLocale('ja', 'assets/i18n/ja.json'),
+  //   ],
+  // );
+}
+
+// The setState call here is required to rebuild the app after language changes.
 void _onTranslatedLanguage(Locale? locale) {
-    setState(() {});
+  setState(() {});
 }
 ```
 
@@ -88,7 +132,8 @@ Widget build(BuildContext context) {
 }
 ```
 
-* Call the **translate** function anytime you want to translate the app and provide it with the language code
+* Call the **translate** function anytime you want to translate the app and provide it with the
+  language code
 
 ```
 ElevatedButton(
@@ -99,8 +144,8 @@ ElevatedButton(
 );
 ```
 
-* To display the value from the Map data, just use the **getString** extension by providing the context
-  (the **AppLocale.title** is the constant from mixin class above)
+* To display the value from the Map data, just use the **getString** extension by providing the
+  context (the **AppLocale.title** is the constant from mixin class above)
 
 ```
 AppLocale.title.getString(context);
@@ -108,8 +153,8 @@ AppLocale.title.getString(context);
 
 ## Extras
 
-* You also can get the language name too. If you don't specify the language code for the function, it will return the
-  language name depend on the current app locale
+* You also can get the language name too. If you don't specify the language code for the function,
+  it will return the language name depend on the current app locale
 
 ```
 localization.getLanguageName(languageCode: 'en');  // English
@@ -119,9 +164,9 @@ localization.getLanguageName(languageCode: 'ja');  // 日本語
 localization.getLanguageName();  // get language name depend on current app locale
 ```
 
-* If you need to use locale identifier in some case, you can get it from the current locale. The identifier format
-  is **languageCode_scriptCode_countryCode**. For **scriptCode** and **countryCode** are optional, this might return
-  only the **languageCode**.
+* If you need to use locale identifier in some case, you can get it from the current locale. The
+  identifier format is **languageCode_scriptCode_countryCode**. For **scriptCode** and
+  **countryCode** are optional, this might return only the **languageCode**.
 
 ```
 localization.currentLocale.localeIdentifier;
@@ -129,28 +174,39 @@ localization.currentLocale.localeIdentifier;
 
 # Some update note
 
+### **Version 0.4.0**
+
+* Added support for loading translations from **JSON assets** using the new `JsonLocale` model.
+* Introduced `LocalizationSource` enum to choose between `LocalizationSource.map` and
+  `LocalizationSource.jsonAsset`.
+
 ### **Version 0.3.0**
 
-From version 0.3.0 up, there a major update that break the code in the initialize flow. Please re-check the README
-document at the beginning of the **Project Configuration** section to see more. The break change related with:
+From version 0.3.0 up, there is a major update that breaks the code in the initialize flow. Please
+re-check the README document at the beginning of the **Project Configuration** section to see more.
+The breaking change is related to:
 
-* Update **main** function from **void** to **Future<void> async** for package ensureInitialized function
+* Update **main** function from **void** to **Future<void> async** for package ensureInitialized
+  function
 * Call **ensureInitialized** function to init the core functionality of the package
 
 ### **Version 0.1.13**
 
-Added **Strings Util** and **Context Extension** for helping with localization text that are dynamic base on language.
-Check the usage below or the [example](https://pub.dev/packages/flutter_localization/example) here.
+Added **Strings Util** and **Context Extension** for helping with localization text that are dynamic
+base on language. Check the usage below or
+the [example](https://pub.dev/packages/flutter_localization/example) here.
 
-As for **Strings Util**, it just formats string normally from the **list of arguments** to the **full text** string.
+As for **Strings Util**, it just formats string normally from the **list of arguments** to the
+**full text** string.
 
 ```
 Strings.format('Hello %a, this is me %a.', ['Dara', 'Sopheak']);
 // Result: Hello Dara, this is me Sopheak.
 ```
 
-As for **Context Extension**, the full text and arguments you provide, will use to check and get data from the string
-source. If the result is null, it will return the key that use to get the resource string.
+As for **Context Extension**, the full text and arguments you provide, will use to check and get
+data from the string source. If the result is null, it will return the key that use to get the
+resource string.
 
 ```
 context.formatString('This is %a package, version %a.', [AppLocale.title, 'LATEST'])
