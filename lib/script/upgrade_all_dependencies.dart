@@ -47,7 +47,8 @@ List<String> _getDependencies(dynamic dependencies) {
 Future<void> _runUpgrade(List<String> dependencies, [bool dev = false]) async {
   try {
     if (dependencies.isNotEmpty) {
-      final result = await Process.run('flutter', [
+      final executable = Platform.isWindows ? 'flutter.bat' : 'flutter';
+      final result = await Process.run(executable, [
         'pub',
         'add',
         if (dev) '--dev',

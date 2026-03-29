@@ -3,7 +3,10 @@ import FlutterMacOS
 
 public class FlutterLocalizationPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "flutter_localization", binaryMessenger: registrar.messenger)
+    let channel = FlutterMethodChannel(
+      name: "flutter_localization",
+      binaryMessenger: registrar.messenger,
+    )
     let instance = FlutterLocalizationPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
@@ -12,6 +15,8 @@ public class FlutterLocalizationPlugin: NSObject, FlutterPlugin {
     switch call.method {
     case "getPlatformVersion":
       result("macOS " + ProcessInfo.processInfo.operatingSystemVersionString)
+    case "getPlatformLocale":
+      result(Locale.current.identifier.replacingOccurrences(of: "_", with: "-"))
     default:
       result(FlutterMethodNotImplemented)
     }
