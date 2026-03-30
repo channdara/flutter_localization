@@ -18,7 +18,6 @@
 .svn/
 
 # IntelliJ related
-*.iml
 *.ipr
 *.iws
 .idea/

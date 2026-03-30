@@ -17,21 +17,21 @@ class FlutterLocalizationTranslator {
   static final FlutterLocalizationTranslator instance =
       FlutterLocalizationTranslator._instance();
 
-  static Map<String, dynamic> _string = {};
-  static List<MapLocale> _mapLocales = [];
-  static LocalizationSource _source = LocalizationSource.map;
-  static List<JsonLocale> _jsonLocales = [];
+  Map<String, dynamic> _string = {};
+  List<MapLocale> _mapLocales = [];
+  LocalizationSource _source = LocalizationSource.map;
+  List<JsonLocale> _jsonLocales = [];
 
   static FlutterLocalizationTranslator? of(BuildContext context) =>
       Localizations.of<FlutterLocalizationTranslator>(
           context, FlutterLocalizationTranslator);
 
-  set mapLocales(List<MapLocale> mapLocales) {
+  void mapLocales(List<MapLocale> mapLocales) {
     _mapLocales = mapLocales;
     _source = LocalizationSource.map;
   }
 
-  set jsonLocales(List<JsonLocale> jsonLocales) {
+  void jsonLocales(List<JsonLocale> jsonLocales) {
     _jsonLocales = jsonLocales;
     _source = LocalizationSource.jsonAsset;
   }
@@ -56,13 +56,12 @@ class FlutterLocalizationTranslator {
           break;
         }
         final jsonString = await rootBundle.loadString(jsonLocale.assetPath);
-        final dynamic decoded = json.decode(jsonString);
+        final dynamic decoded = jsonDecode(jsonString);
         if (decoded is Map<String, dynamic>) {
           _string = decoded;
         } else if (decoded is Map) {
-          _string = decoded.map(
-            (key, value) => MapEntry(key.toString(), value),
-          );
+          _string =
+              decoded.map((key, value) => MapEntry(key.toString(), value));
         } else {
           _string = {};
         }
