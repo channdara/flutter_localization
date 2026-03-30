@@ -1,3 +1,9 @@
+## 0.4.0
+
+* Add support for **JSON Asset** file locale
+* Add support for **Swift Package Manager**
+* Update some dependencies use to support the package
+
 ## 0.3.3
 
 * Resolve issue with **Platform._localeName** on **Web** platform
