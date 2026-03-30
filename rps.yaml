@@ -1,0 +1,4 @@
+scripts:
+  upgrade: 'dart run lib/script/upgrade_all_dependencies.dart'
+  test: 'flutter pub publish --dry-run'
+  publish: 'flutter pub publish'

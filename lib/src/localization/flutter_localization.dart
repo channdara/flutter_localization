@@ -70,12 +70,12 @@ class FlutterLocalization {
   /// determine the initial language when the app starts for the first time.
   void init({
     required String initLanguageCode,
-    List<MapLocale>? mapLocales,
     LocalizationSource source = LocalizationSource.map,
+    List<MapLocale>? mapLocales,
     List<JsonLocale>? jsonLocales,
   }) {
     if (_currentLocale == null) throw const EnsureInitializeException();
-    _supportedLocales = <Locale>[];
+    _supportedLocales.clear();
     _fontFamily.clear();
     switch (source) {
       case LocalizationSource.map:
@@ -86,9 +86,6 @@ class FlutterLocalization {
     if (!_localeFromPreferences) {
       _currentLocale = _generateLocale(initLanguageCode);
     }
-    // if (_currentLocale != null && source == LocalizationSource.jsonAsset) {
-    //   await FlutterLocalizationTranslator.instance.load(_currentLocale!);
-    // }
     _reload();
   }
 
@@ -99,7 +96,12 @@ class FlutterLocalization {
   /// [FlutterLocalizationTranslator] so it can resolve string values at
   /// runtime.
   void _configureFromMapLocales(List<MapLocale> locales) {
-    FlutterLocalizationTranslator.instance.mapLocales = locales;
+    if (locales.isEmpty) {
+      throw ArgumentError(
+        'mapLocales must be provided when using LocalizationSource.map',
+      );
+    }
+    FlutterLocalizationTranslator.instance.mapLocales(locales);
     _supportedLocales = locales.map((e) => e.locale).toList();
     for (final locale in locales) {
       _fontFamily.putIfAbsent(locale.languageCode, () => locale.fontFamily);
@@ -119,7 +121,7 @@ class FlutterLocalization {
         'jsonLocales must be provided when using LocalizationSource.jsonAsset',
       );
     }
-    FlutterLocalizationTranslator.instance.jsonLocales = locales;
+    FlutterLocalizationTranslator.instance.jsonLocales(locales);
     _supportedLocales = locales.map((e) => e.locale).toList();
     for (final locale in locales) {
       _fontFamily.putIfAbsent(locale.languageCode, () => locale.fontFamily);
