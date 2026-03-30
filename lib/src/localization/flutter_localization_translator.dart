@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../data/language_name.dart';
+import '../model/json_locale.dart';
+import '../model/localization_source.dart';
 import '../model/map_locale.dart';
 
 class FlutterLocalizationTranslator {
@@ -13,23 +17,55 @@ class FlutterLocalizationTranslator {
   static final FlutterLocalizationTranslator instance =
       FlutterLocalizationTranslator._instance();
 
-  static Map<String, dynamic> _string = {};
-  static List<MapLocale> _mapLocales = [];
+  Map<String, dynamic> _string = {};
+  List<MapLocale> _mapLocales = [];
+  LocalizationSource _source = LocalizationSource.map;
+  List<JsonLocale> _jsonLocales = [];
 
   static FlutterLocalizationTranslator? of(BuildContext context) =>
       Localizations.of<FlutterLocalizationTranslator>(
           context, FlutterLocalizationTranslator);
 
-  set mapLocales(List<MapLocale> mapLocales) => _mapLocales = mapLocales;
+  void mapLocales(List<MapLocale> mapLocales) {
+    _mapLocales = mapLocales;
+    _source = LocalizationSource.map;
+  }
 
-  /// This function will load the value from the specific map data that provided
-  /// by the [MapLocale] object from the initialization and return an instance
-  /// of the [FlutterLocalizationTranslator] class as a Future.
+  void jsonLocales(List<JsonLocale> jsonLocales) {
+    _jsonLocales = jsonLocales;
+    _source = LocalizationSource.jsonAsset;
+  }
+
+  /// This function will load the value from either the provided [MapLocale]
+  /// data or from JSON asset files (depending on [LocalizationSource]) and
+  /// return an instance of the [FlutterLocalizationTranslator] class.
   Future<FlutterLocalizationTranslator> load(Locale locale) async {
-    _string = _mapLocales
-        .where((e) => e.languageCode == locale.languageCode)
-        .first
-        .mapData;
+    switch (_source) {
+      case LocalizationSource.map:
+        _string = _mapLocales
+            .where((e) => e.languageCode == locale.languageCode)
+            .first
+            .mapData;
+      case LocalizationSource.jsonAsset:
+        JsonLocale jsonLocale;
+        try {
+          jsonLocale = _jsonLocales
+              .firstWhere((e) => e.languageCode == locale.languageCode);
+        } catch (_) {
+          _string = {};
+          break;
+        }
+        final jsonString = await rootBundle.loadString(jsonLocale.assetPath);
+        final dynamic decoded = jsonDecode(jsonString);
+        if (decoded is Map<String, dynamic>) {
+          _string = decoded;
+        } else if (decoded is Map) {
+          _string =
+              decoded.map((key, value) => MapEntry(key.toString(), value));
+        } else {
+          _string = {};
+        }
+    }
     return instance;
   }
 

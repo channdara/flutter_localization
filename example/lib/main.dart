@@ -11,6 +11,7 @@ mixin AppLocale {
   static const String title = 'title';
   static const String thisIs = 'thisIs';
 
+  // In-memory map data example
   static const Map<String, dynamic> EN = {
     title: 'Localization',
     thisIs: 'This is %a package, version %a.',
@@ -37,31 +38,36 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+    _localization.onTranslatedLanguage = _onTranslatedLanguage;
+    _initializeLocalization();
+    super.initState();
+  }
+
+  Future<void> _initializeLocalization() async {
     _localization.init(
-      mapLocales: [
-        const MapLocale(
+      initLanguageCode: 'en',
+      source: LocalizationSource.jsonAsset,
+      jsonLocales: const [
+        JsonLocale(
           'en',
-          AppLocale.EN,
+          'assets/i18n/en.json',
           countryCode: 'US',
           fontFamily: 'Font EN',
         ),
-        const MapLocale(
+        JsonLocale(
           'km',
-          AppLocale.KM,
+          'assets/i18n/km.json',
           countryCode: 'KH',
           fontFamily: 'Font KM',
         ),
-        const MapLocale(
+        JsonLocale(
           'ja',
-          AppLocale.JA,
+          'assets/i18n/ja.json',
           countryCode: 'JP',
           fontFamily: 'Font JA',
         ),
       ],
-      initLanguageCode: 'en',
     );
-    _localization.onTranslatedLanguage = _onTranslatedLanguage;
-    super.initState();
   }
 
   void _onTranslatedLanguage(Locale? locale) {
