@@ -6,8 +6,8 @@ SDK [flutter_localizations](https://api.flutter.dev/flutter/flutter_localization
 itself. Follow the steps below to use the package, or you can check out a
 small [example](https://pub.dev/packages/flutter_localization/example) project of the package.
 
-<a href="https://www.buymeacoffee.com/eamchanndara" target="_blank"><img height='40' style='border:0px;height:40px;' src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" style="height: 60px !important;width: 217px !important;" ></a>
-<a href='https://ko-fi.com/J3J3POSKS' target='_blank'><img height='40' style='border:0px;height:40px;' src='https://storage.ko-fi.com/cdn/kofi5.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+<a href="https://www.buymeacoffee.com/eamchanndara" target="_blank"><img height='40' width='145' style='border:0px;height:40px;' src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+<a href='https://ko-fi.com/J3J3POSKS' target='_blank'><img height='40' width='160' style='border:0px;height:40px;' src='https://storage.ko-fi.com/cdn/kofi5.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
 # Breaking Changes
 
@@ -89,12 +89,18 @@ final FlutterLocalization localization = FlutterLocalization.instance;
 @override
 void initState() {
   localization.onTranslatedLanguage = _onTranslatedLanguage;
-  _initializeLocalization();
+
+  /// Initialize with map-based
+  _initializeLocalizationMapBased();
+
+  /// or JSON asset base on your language source 
+  _initializeLocalizationJsonAsset();
+
+  /// make sure to use only 1 type of source
   super.initState();
 }
 
-Future<void> _initializeLocalization() async {
-  // Map-based configuration
+Future<void> _initializeLocalizationMapBased() async {
   await localization.init(
     initLanguageCode: 'en',
     source: LocalizationSource.map,
@@ -104,17 +110,18 @@ Future<void> _initializeLocalization() async {
       MapLocale('ja', AppLocale.JA),
     ],
   );
+}
 
-  // Or JSON-based configuration using JsonLocale:
-  // await localization.init(
-  //   initLanguageCode: 'en',
-  //   source: LocalizationSource.jsonAsset,
-  //   jsonLocales: const [
-  //     JsonLocale('en', 'assets/i18n/en.json'),
-  //     JsonLocale('km', 'assets/i18n/km.json'),
-  //     JsonLocale('ja', 'assets/i18n/ja.json'),
-  //   ],
-  // );
+Future<void> _initializeLocalizationJsonAsset() async {
+  await localization.init(
+    initLanguageCode: 'en',
+    source: LocalizationSource.jsonAsset,
+    jsonLocales: const [
+      JsonLocale('en', 'assets/i18n/en.json'),
+      JsonLocale('km', 'assets/i18n/km.json'),
+      JsonLocale('ja', 'assets/i18n/ja.json'),
+    ],
+  );
 }
 
 // The setState call here is required to rebuild the app after language changes.
