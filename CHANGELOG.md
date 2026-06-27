@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Android - Migrate to build-in Kotlin
+
 ## 0.4.0
 
 * Add support for **JSON Asset** file locale

@@ -11,12 +11,16 @@ let package = Package(
     products: [
         .library(name: "flutter-localization", targets: ["flutter_localization"]),
     ],
-    dependencies: [],
+    dependencies: [
+        .package(name: "FlutterFramework", path: "../FlutterFramework"),
+    ],
     targets: [
         .target(
             name: "flutter_localization",
-            dependencies: [],
-            resources: [],
+            dependencies: [
+                .product(name: "FlutterFramework", package: "FlutterFramework"),
+            ],
+            resources: []
         ),
     ],
 )
