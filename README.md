@@ -88,20 +88,22 @@ final FlutterLocalization localization = FlutterLocalization.instance;
 ```dart
 @override
 void initState() {
-  localization.onTranslatedLanguage = _onTranslatedLanguage;
-
-  /// Initialize with map-based
-  _initializeLocalizationMapBased();
-
-  /// or JSON asset base on your language source 
-  _initializeLocalizationJsonAsset();
-
-  /// make sure to use only 1 type of source
   super.initState();
+  localization.onTranslatedLanguage = _onTranslatedLanguage;
+  // Initialize with map-based
+  _initializeLocalizationMapBased();
+  // or JSON asset base on your language source 
+  _initializeLocalizationJsonAsset();
+  // make sure to use only 1 type of source
 }
 
-Future<void> _initializeLocalizationMapBased() async {
-  await localization.init(
+// The setState call here is required to rebuild the app after language changes.
+void _onTranslatedLanguage(Locale? locale) {
+  setState(() {});
+}
+
+void _initializeLocalizationMapBased() {
+  localization.init(
     initLanguageCode: 'en',
     source: LocalizationSource.map,
     mapLocales: const [
@@ -112,8 +114,8 @@ Future<void> _initializeLocalizationMapBased() async {
   );
 }
 
-Future<void> _initializeLocalizationJsonAsset() async {
-  await localization.init(
+void _initializeLocalizationJsonAsset() {
+  localization.init(
     initLanguageCode: 'en',
     source: LocalizationSource.jsonAsset,
     jsonLocales: const [
@@ -122,11 +124,6 @@ Future<void> _initializeLocalizationJsonAsset() async {
       JsonLocale('ja', 'assets/i18n/ja.json'),
     ],
   );
-}
-
-// The setState call here is required to rebuild the app after language changes.
-void _onTranslatedLanguage(Locale? locale) {
-  setState(() {});
 }
 ```
 
