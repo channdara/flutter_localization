@@ -23,6 +23,12 @@ allprojects {
 
 plugins {
     id("com.android.library")
+    id("org.jetbrains.kotlin.android") apply false
+}
+
+val isBuiltInKotlin = project.findProperty("android.builtInKotlin")?.toString() == "true"
+if (!isBuiltInKotlin) {
+    plugins.apply("org.jetbrains.kotlin.android")
 }
 
 android {
@@ -45,8 +51,10 @@ android {
     }
 }
 
-kotlin {
-    compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+plugins.withType<org.jetbrains.kotlin.gradle.plugin.KotlinBasePluginWrapper> {
+    configure<org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension> {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
     }
 }
