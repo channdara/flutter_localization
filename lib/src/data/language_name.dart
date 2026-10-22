@@ -14,6 +14,7 @@ final Map<String, dynamic> languageName = {
   'be': 'Беларуская',
   'bg': 'Български',
   'bh': 'भोजपुरी',
+  'bho': 'भोजपुरी',
   'bi': 'Bislama',
   'bm': 'Bamanankan',
   'bn': 'বাংলা',

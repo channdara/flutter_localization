@@ -324,27 +324,6 @@ Android currently targets:
 These recent build-tool requirements should be tested in CI against the minimum
 Flutter version claimed by the package, not only the latest Flutter SDK.
 
-### Architectural simplification opportunity
-
-The package can likely become a pure Flutter package. Flutter already exposes
-the platform locale through:
-
-```
-WidgetsBinding.instance.platformDispatcher.locale
-```
-
-Using Flutter's platform dispatcher would remove:
-
-- all five native plugin implementations;
-- the web registrar and `web` dependency;
-- method channels;
-- `plugin_platform_interface`;
-- `universal_io`;
-- platform build compatibility burden.
-
-This should be evaluated as a deliberate breaking or migration change, but it is
-the highest-value simplification available.
-
 ## 7. Persistence behavior
 
 Preferences use one key, `translator_locale_key`, whose value is JSON containing
@@ -614,19 +593,6 @@ Recommendation:
 - allow application overrides;
 - clarify that values are self-names, not names localized to the current UI;
 - review against a maintained locale dataset.
-
-### Medium: plugin scaffolding adds substantial maintenance cost
-
-The package's only platform-specific need is obtaining the browser locale. The
-native version methods are unused and not exported through the main library.
-Maintaining six plugin declarations increases build compatibility and release
-testing work without contributing to the core feature.
-
-Recommendation:
-
-- use Flutter's platform dispatcher and convert to a pure Flutter package;
-- if the plugin architecture remains, complete and test a meaningful platform
-  contract on every declared platform.
 
 ### Medium: dependency/tool placement can be improved
 
