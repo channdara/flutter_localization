@@ -11,7 +11,13 @@ import 'flutter_localization_translator.dart';
 /// all follow the same locale.
 class FlutterLocalizationDelegate
     extends LocalizationsDelegate<FlutterLocalizationTranslator> {
-  const FlutterLocalizationDelegate();
+  const FlutterLocalizationDelegate(this.configurationId);
+
+  /// [FlutterLocalizationTranslator.configurationId] captured for this delegate.
+  ///
+  /// A new id means the map or JSON sources were replaced and strings must be
+  /// loaded again, even when the locale did not change.
+  final int configurationId;
 
   /// The override function from [LocalizationsDelegate] to check the supported
   /// language provided by the app configuration
@@ -28,8 +34,8 @@ class FlutterLocalizationDelegate
   Future<FlutterLocalizationTranslator> load(Locale locale) =>
       FlutterLocalizationTranslator.instance.load(locale);
 
-  /// Locale changes are applied through `MaterialApp.locale`. This delegate
-  /// has no separate locale to compare.
+  /// Locale changes are applied through `MaterialApp.locale`.
   @override
-  bool shouldReload(FlutterLocalizationDelegate old) => false;
+  bool shouldReload(FlutterLocalizationDelegate old) =>
+      configurationId != old.configurationId;
 }

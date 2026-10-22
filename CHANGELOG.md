@@ -8,6 +8,8 @@
 * Match locales by language, script, and country. `translate()` accepts a language code or a full locale tag such as
   `en-US` or `zh-Hant`, and `translateLocale()` accepts a `Locale`. Language-only requests that match more than one
   variant are rejected.
+* Overlapping JSON loads no longer let a slower asset replace the locale that was selected later. Decoded JSON is cached
+  per locale.
 
 ## 0.4.1
 

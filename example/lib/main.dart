@@ -12,15 +12,15 @@ mixin AppLocale {
   static const String thisIs = 'thisIs';
 
   // In-memory map data example
-  static const Map<String, dynamic> EN = {
+  static const Map<String, dynamic> ENGLISH = {
     title: 'Localization',
     thisIs: 'This is %a package, version %a.',
   };
-  static const Map<String, dynamic> KM = {
+  static const Map<String, dynamic> KHMER = {
     title: 'ការធ្វើមូលដ្ឋានីយកម្ម',
     thisIs: 'នេះគឺជាកញ្ចប់%a កំណែ%a.',
   };
-  static const Map<String, dynamic> JA = {
+  static const Map<String, dynamic> JAPANESE = {
     title: 'ローカリゼーション',
     thisIs: 'これは%aパッケージ、バージョン%aです。',
   };
@@ -39,6 +39,11 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    _initForJsonLocale();
+    // _initForMapLocale();
+  }
+
+  void _initForJsonLocale() {
     _localization.init(
       initLanguageCode: 'en',
       source: LocalizationSource.jsonAsset,
@@ -63,6 +68,29 @@ class _MyAppState extends State<MyApp> {
         ),
       ],
     );
+  }
+
+  void _initForMapLocale() {
+    _localization.init(initLanguageCode: 'en', mapLocales: const [
+      MapLocale(
+        'en',
+        AppLocale.ENGLISH,
+        countryCode: 'US',
+        fontFamily: 'Font EN',
+      ),
+      MapLocale(
+        'km',
+        AppLocale.KHMER,
+        countryCode: 'KH',
+        fontFamily: 'Font KM',
+      ),
+      MapLocale(
+        'ja',
+        AppLocale.JAPANESE,
+        countryCode: 'JP',
+        fontFamily: 'Font JA',
+      ),
+    ]);
   }
 
   @override

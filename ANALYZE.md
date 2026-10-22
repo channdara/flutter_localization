@@ -373,26 +373,6 @@ the first supported locale.
 
 ## 9. Findings and risks
 
-### Critical: asynchronous JSON loads can race
-
-`FlutterLocalizationTranslator` is one mutable singleton. Every `load` awaits an
-asset and then replaces `_string`. If users switch quickly:
-
-1. locale A begins loading;
-2. locale B begins loading;
-3. B completes and sets B strings;
-4. A completes later and overwrites them with A strings.
-
-The final translation map can disagree with `currentLocale`.
-
-Recommendation:
-
-- make each delegate load return an immutable translator instance for one
-  locale, rather than mutating a global singleton;
-- cache decoded maps by full locale;
-- optionally discard stale loads with a generation token;
-- test rapid switching with controlled asset-load completion order.
-
 ### High: unsupported startup and saved locales are not handled
 
 An invalid `initLanguageCode` reaches `singleWhere` and throws. A locale restored

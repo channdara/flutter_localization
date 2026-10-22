@@ -42,10 +42,9 @@ class FlutterLocalization extends ChangeNotifier {
   /// Font families keyed by full locale identity.
   final Map<String, String?> _fontFamily = {};
 
-  static final List<LocalizationsDelegate<dynamic>> _localizationsDelegates =
+  static final List<LocalizationsDelegate<dynamic>> _flutterDelegates =
       List<LocalizationsDelegate<dynamic>>.unmodifiable(
     <LocalizationsDelegate<dynamic>>[
-      const FlutterLocalizationDelegate(),
       GlobalMaterialLocalizations.delegate,
       GlobalWidgetsLocalizations.delegate,
       GlobalCupertinoLocalizations.delegate,
@@ -195,9 +194,19 @@ class FlutterLocalization extends ChangeNotifier {
   Iterable<Locale> get supportedLocales => _supportedLocales;
 
   /// Apply all the needed delegate and the package delegate for the app.
-  /// This will use at the MaterialApp
+  /// This will use at the MaterialApp.
+  ///
+  /// The package delegate carries the current source configuration, so replacing
+  /// map or JSON data reloads strings on the next build.
   Iterable<LocalizationsDelegate<dynamic>> get localizationsDelegates =>
-      _localizationsDelegates;
+      List<LocalizationsDelegate<dynamic>>.unmodifiable(
+        <LocalizationsDelegate<dynamic>>[
+          FlutterLocalizationDelegate(
+            FlutterLocalizationTranslator.configurationId,
+          ),
+          ..._flutterDelegates,
+        ],
+      );
 
   /// Provides the font family configured for the current locale.
   String? get fontFamily => _fontFamily[_currentLocale.localeIdentifier];
