@@ -2,3 +2,6 @@ scripts:
   upgrade: 'dart run lib/script/upgrade_all_dependencies.dart'
   test: 'flutter pub publish --dry-run'
   publish: 'flutter pub publish'
+  cleans: 'flutter clean && cd example && flutter clean && cd ..'
+  push:
+    device: 'rps cleans && adb shell rm -rf /sdcard/Projects/flutter_localization/* && adb push . /sdcard/Projects/flutter_localization/ && flutter pub get'

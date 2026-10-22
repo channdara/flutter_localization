@@ -1,6 +1,6 @@
 # flutter_localization_example
 
-Demonstrates how to use the flutter_localization plugin.
+Demonstrates how to use the flutter_localization package.
 
 ## Getting Started
 

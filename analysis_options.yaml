@@ -29,6 +29,12 @@ analyzer:
     # Ignore protoc generated files
     - "dev/conductor/lib/proto/*"
     - "engine/**"
+    - build/**
+    - android/**
+    - ios/**
+    - windows/**
+    - macos/**
+    - linux/**
 
 linter:
   rules:

@@ -1,3 +1,9 @@
+## 1.0.0
+
+* Convert the plugin to a pure Flutter package
+* Use Flutter's platform dispatcher to determine the platform locale
+* Remove native plugin implementations and plugin-only dependencies
+
 ## 0.4.1
 
 * Android - Migrate to build-in Kotlin

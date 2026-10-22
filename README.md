@@ -64,7 +64,7 @@ flutter:
 
 ## Project Configuration
 
-* Ensure plugin initialize. Update main function into async function, add `WidgetsFlutterBinding.ensureInitialized()`
+* Ensure package initialization. Update main function into async function, add `WidgetsFlutterBinding.ensureInitialized()`
   and `await FlutterLocalization.instance.ensureInitialized()` before `runApp()` function like below.
 
 ```dart

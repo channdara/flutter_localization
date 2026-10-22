@@ -1,10 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:universal_io/io.dart';
 
 import '../../flutter_localization.dart';
-import '../../flutter_localization_platform_interface.dart';
 import '../model/ensure_initialized_exception.dart';
 import '../utility/preference_util.dart';
 import 'flutter_localization_delegate.dart';
@@ -42,20 +39,8 @@ class FlutterLocalization {
   Future<void> ensureInitialized() async {
     final locale = await PreferenceUtil.getLocale();
     _localeFromPreferences = locale != null;
-    _currentLocale = locale ?? await _platformLocale();
-  }
-
-  /// Get default locale object from string localeName of Platform class
-  Future<Locale> _platformLocale() async {
-    final localeName = kIsWeb
-        ? await FlutterLocalizationPlatform.instance.getPlatformLocale()
-        : Platform.localeName;
-    final locale = localeName.split(RegExp(r'[-_]'));
-    return Locale.fromSubtags(
-      languageCode: locale.first,
-      countryCode: locale.last,
-      scriptCode: locale.length > 2 ? locale[1] : null,
-    );
+    _currentLocale =
+        locale ?? WidgetsBinding.instance.platformDispatcher.locale;
   }
 
   /// Initialize the localization configuration.
