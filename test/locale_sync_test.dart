@@ -52,6 +52,84 @@ void main() {
       cancelLabel: 'الإلغاء',
     );
   });
+
+  testWidgets('region variants keep distinct translations and fonts',
+      (tester) async {
+    SharedPreferences.setMockInitialValues(<String, Object>{});
+    final FlutterLocalization localization = FlutterLocalization.instance;
+    await localization.ensureInitialized();
+    localization.init(
+      initLanguageCode: 'en-US',
+      mapLocales: const <MapLocale>[
+        MapLocale(
+          'en',
+          <String, dynamic>{'title': 'Color'},
+          countryCode: 'US',
+          fontFamily: 'UsFont',
+        ),
+        MapLocale(
+          'en',
+          <String, dynamic>{'title': 'Colour'},
+          countryCode: 'GB',
+          fontFamily: 'GbFont',
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(_LocalizedApp(localization));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Color'), findsOneWidget);
+    expect(localization.currentLocale, const Locale('en', 'US'));
+    expect(localization.fontFamily, 'UsFont');
+    expect(localization.supportedLocaleIdentifiers, <String>['en_US', 'en_GB']);
+
+    localization.translate('en-GB', save: false);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Colour'), findsOneWidget);
+    expect(localization.currentLocale, const Locale('en', 'GB'));
+    expect(localization.fontFamily, 'GbFont');
+    expect(
+      () => localization.translate('en', save: false),
+      throwsArgumentError,
+    );
+  });
+
+  testWidgets('script variants keep distinct locale identities',
+      (tester) async {
+    SharedPreferences.setMockInitialValues(<String, Object>{});
+    final FlutterLocalization localization = FlutterLocalization.instance;
+    await localization.ensureInitialized();
+    localization.init(
+      initLanguageCode: 'zh-Hans',
+      mapLocales: const <MapLocale>[
+        MapLocale(
+          'zh',
+          <String, dynamic>{'title': '简体'},
+          scriptCode: 'Hans',
+        ),
+        MapLocale(
+          'zh',
+          <String, dynamic>{'title': '繁體'},
+          scriptCode: 'Hant',
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(_LocalizedApp(localization));
+    await tester.pumpAndSettle();
+    expect(find.text('简体'), findsOneWidget);
+
+    localization.translateLocale(
+      const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+      save: false,
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('繁體'), findsOneWidget);
+    expect(localization.currentLocale?.scriptCode, 'Hant');
+  });
 }
 
 void _expectLocale(

@@ -373,30 +373,6 @@ the first supported locale.
 
 ## 9. Findings and risks
 
-### Critical: locale identity is reduced to language code
-
-Although models accept script and country, matching uses only `languageCode` in:
-
-- map translation lookup;
-- JSON descriptor lookup;
-- `isSupported`;
-- font-family lookup;
-- duplicate-switch prevention;
-- language-code generation.
-
-`_getCountryCode` and `_getScriptCode` call `singleWhere` by language code.
-Providing `en-US` and `en-GB`, or `zh-Hans` and `zh-Hant`, makes selection
-ambiguous and can throw. Switching between two variants with the same language
-also returns early.
-
-Recommendation:
-
-- change `translate` to accept `Locale`, or accept a full BCP-47/locale tag;
-- compare language, script, and country together;
-- key translations and fonts by full locale identity;
-- implement an explicit fallback algorithm;
-- either fully support variants or remove script/country claims until fixed.
-
 ### Critical: asynchronous JSON loads can race
 
 `FlutterLocalizationTranslator` is one mutable singleton. Every `load` awaits an

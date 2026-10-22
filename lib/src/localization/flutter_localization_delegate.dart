@@ -17,8 +17,11 @@ class FlutterLocalizationDelegate
   /// language provided by the app configuration
   @override
   bool isSupported(Locale locale) =>
-      FlutterLocalization.instance.supportedLanguageCodes
-          .contains(locale.languageCode);
+      resolveSupportedLocale(
+        locale,
+        FlutterLocalization.instance.supportedLocales,
+      ) !=
+      null;
 
   /// The override function from [LocalizationsDelegate] to load the locale
   @override

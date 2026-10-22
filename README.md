@@ -147,16 +147,19 @@ Widget build(BuildContext context) {
 }
 ```
 
-* Call the `translate()` function anytime you want to translate the app and provide it with the language code
+* Call `translate()` with a language code or full locale tag. Use the full tag
+  when a language has multiple region or script variants.
 
 ```
 ElevatedButton(
   child: const Text('English'),
   onPressed: () {
-    localization.translate('en');
+    localization.translate('en'); // or full tag en-US
   },
 );
 ```
+
+You can also pass a `Locale` directly with `localization.translateLocale(const Locale('en', 'GB'))`.
 
 * To display the value from the Map data, just use the `getString()` extension by providing the context (the
   `AppLocale.title` is the constant from mixin class above)

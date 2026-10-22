@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../data/language_name.dart';
+import '../extension/locale_extension.dart';
 import '../model/json_locale.dart';
 import '../model/localization_source.dart';
 import '../model/map_locale.dart';
@@ -42,19 +43,25 @@ class FlutterLocalizationTranslator {
   Future<FlutterLocalizationTranslator> load(Locale locale) async {
     switch (_source) {
       case LocalizationSource.map:
-        _string = _mapLocales
-            .where((e) => e.languageCode == locale.languageCode)
-            .first
-            .mapData;
-      case LocalizationSource.jsonAsset:
-        JsonLocale jsonLocale;
-        try {
-          jsonLocale = _jsonLocales
-              .firstWhere((e) => e.languageCode == locale.languageCode);
-        } catch (_) {
+        final resolved = resolveSupportedLocale(
+          locale,
+          _mapLocales.map((e) => e.locale),
+        );
+        if (resolved == null) {
           _string = {};
           break;
         }
+        _string = _mapLocales.firstWhere((e) => e.locale == resolved).mapData;
+      case LocalizationSource.jsonAsset:
+        final resolved = resolveSupportedLocale(
+          locale,
+          _jsonLocales.map((e) => e.locale),
+        );
+        if (resolved == null) {
+          _string = {};
+          break;
+        }
+        final jsonLocale = _jsonLocales.firstWhere((e) => e.locale == resolved);
         final jsonString = await rootBundle.loadString(jsonLocale.assetPath);
         final dynamic decoded = jsonDecode(jsonString);
         if (decoded is Map<String, dynamic>) {

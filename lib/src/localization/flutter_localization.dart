@@ -39,7 +39,7 @@ class FlutterLocalization extends ChangeNotifier {
   /// `locale: currentLocale`.
   TranslatorCallback? onTranslatedLanguage;
 
-  /// The map data that store all the provided font family from [MapLocale]
+  /// Font families keyed by full locale identity.
   final Map<String, String?> _fontFamily = {};
 
   static final List<LocalizationsDelegate<dynamic>> _localizationsDelegates =
@@ -86,7 +86,7 @@ class FlutterLocalization extends ChangeNotifier {
         _configureFromJsonLocales(jsonLocales ?? <JsonLocale>[]);
     }
     if (!_localeFromPreferences) {
-      _currentLocale = _generateLocale(initLanguageCode);
+      _currentLocale = _resolveLocale(parseLocale(initLanguageCode));
     }
     _reload();
   }
@@ -106,7 +106,7 @@ class FlutterLocalization extends ChangeNotifier {
     FlutterLocalizationTranslator.instance.mapLocales(locales);
     _supportedLocales = locales.map((e) => e.locale).toList();
     for (final locale in locales) {
-      _fontFamily.putIfAbsent(locale.languageCode, () => locale.fontFamily);
+      _fontFamily[locale.locale.localeIdentifier] = locale.fontFamily;
     }
   }
 
@@ -126,30 +126,39 @@ class FlutterLocalization extends ChangeNotifier {
     FlutterLocalizationTranslator.instance.jsonLocales(locales);
     _supportedLocales = locales.map((e) => e.locale).toList();
     for (final locale in locales) {
-      _fontFamily.putIfAbsent(locale.languageCode, () => locale.fontFamily);
+      _fontFamily[locale.locale.localeIdentifier] = locale.fontFamily;
     }
   }
 
-  /// This will generate new locale base on provided languageCode. The locale
-  /// data is getting from [_supportedLocales] list.
-  Locale _generateLocale(String languageCode) {
-    final countryCode = _getCountryCode(languageCode);
-    final scriptCode = _getScriptCode(languageCode);
-    return Locale.fromSubtags(
-      languageCode: languageCode,
-      countryCode: countryCode,
-      scriptCode: scriptCode,
+  Locale _resolveLocale(Locale requested) {
+    final locale = resolveSupportedLocale(requested, _supportedLocales);
+    if (locale != null) return locale;
+
+    throw ArgumentError.value(
+      requested.localeIdentifier,
+      'locale',
+      'Locale is unsupported or ambiguous. Use a full locale tag when multiple variants of a language are configured.',
     );
   }
 
   /// Call this function at where you want to translate the app like by
-  /// pressing the button or any actions.
+  /// pressing the button or any actions. [localeTag] may be a language code
+  /// (`en`) or a full locale tag (`en-US` or `zh-Hant`).
   void translate(
-    String languageCode, {
+    String localeTag, {
     bool save = true,
   }) {
-    if (languageCode == _currentLocale?.languageCode) return;
-    _currentLocale = _generateLocale(languageCode);
+    translateLocale(parseLocale(localeTag), save: save);
+  }
+
+  /// Changes the app to the supported locale matching [locale].
+  void translateLocale(
+    Locale locale, {
+    bool save = true,
+  }) {
+    final resolved = _resolveLocale(locale);
+    if (resolved == _currentLocale) return;
+    _currentLocale = resolved;
     if (save) PreferenceUtil.setLocale(_currentLocale);
     _reload();
   }
@@ -161,22 +170,6 @@ class FlutterLocalization extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Get country code from the list of MapLocale provided by the [init] function
-  /// that base on language code
-  String? _getCountryCode(String languageCode) {
-    return _supportedLocales
-        .singleWhere((element) => element.languageCode == languageCode)
-        .countryCode;
-  }
-
-  /// Get script code from the list of MapLocale provided by the [init] function
-  /// that base on language code
-  String? _getScriptCode(String languageCode) {
-    return _supportedLocales
-        .singleWhere((element) => element.languageCode == languageCode)
-        .scriptCode;
-  }
-
   /// This just call the getName() function from [FlutterLocalizationTranslator]
   /// class for getting the full language name by the language code.
   String getLanguageName({String? languageCode}) =>
@@ -186,6 +179,10 @@ class FlutterLocalization extends ChangeNotifier {
   /// Get the list of supported language code provided by the [init] function
   List<String> get supportedLanguageCodes =>
       _supportedLocales.map((e) => e.languageCode).toList();
+
+  /// Full identifiers for the locales provided by [init].
+  List<String> get supportedLocaleIdentifiers =>
+      _supportedLocales.map((e) => e.localeIdentifier).toList();
 
   /// The locale the app should display.
   ///
@@ -202,6 +199,6 @@ class FlutterLocalization extends ChangeNotifier {
   Iterable<LocalizationsDelegate<dynamic>> get localizationsDelegates =>
       _localizationsDelegates;
 
-  /// Provide the font family by the current locale's language code
-  String? get fontFamily => _fontFamily[_currentLocale?.languageCode];
+  /// Provides the font family configured for the current locale.
+  String? get fontFamily => _fontFamily[_currentLocale.localeIdentifier];
 }
