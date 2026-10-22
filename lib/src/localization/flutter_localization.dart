@@ -9,15 +9,18 @@ import 'flutter_localization_translator.dart';
 
 typedef TranslatorCallback = void Function(Locale?);
 
-class FlutterLocalization {
+/// Coordinates the selected locale and the translations Flutter loads.
+///
+/// This object is a [ChangeNotifier]. Listen to [FlutterLocalization.instance]
+/// and pass [currentLocale] to `MaterialApp.locale` (usually from a
+/// [ListenableBuilder]) so package strings and Flutter's own locale stay
+/// aligned. The shared instance is not meant to be disposed.
+class FlutterLocalization extends ChangeNotifier {
   /// Private instance constructor.
   FlutterLocalization._instance();
 
   /// The instance object of [FlutterLocalization] class.
   static final FlutterLocalization instance = FlutterLocalization._instance();
-
-  /// The package delegate. This is private, only use in the package.
-  FlutterLocalizationDelegate _delegate = FlutterLocalizationDelegate(null);
 
   /// The list of supported locale provide by the [init] function
   List<Locale> _supportedLocales = [];
@@ -30,10 +33,24 @@ class FlutterLocalization {
 
   /// Callback for the translation. This will call after the [translate]
   /// function is called.
+  ///
+  /// Prefer listening to this [ChangeNotifier] instead. A later assignment
+  /// replaces the previous callback. Either way, rebuild with
+  /// `locale: currentLocale`.
   TranslatorCallback? onTranslatedLanguage;
 
   /// The map data that store all the provided font family from [MapLocale]
   final Map<String, String?> _fontFamily = {};
+
+  static final List<LocalizationsDelegate<dynamic>> _localizationsDelegates =
+      List<LocalizationsDelegate<dynamic>>.unmodifiable(
+    <LocalizationsDelegate<dynamic>>[
+      const FlutterLocalizationDelegate(),
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+  );
 
   /// To ensure the currentLocale object is provided before runApp
   Future<void> ensureInitialized() async {
@@ -137,10 +154,11 @@ class FlutterLocalization {
     _reload();
   }
 
-  /// Reload the delegate with new locale and call the callback for app reload.
+  /// Notifies listeners that [currentLocale] changed so the app can rebuild
+  /// `MaterialApp` with that locale.
   void _reload() {
-    _delegate = FlutterLocalizationDelegate(_currentLocale);
     onTranslatedLanguage?.call(_currentLocale);
+    notifyListeners();
   }
 
   /// Get country code from the list of MapLocale provided by the [init] function
@@ -169,7 +187,10 @@ class FlutterLocalization {
   List<String> get supportedLanguageCodes =>
       _supportedLocales.map((e) => e.languageCode).toList();
 
-  /// Get the current locale of the app.
+  /// The locale the app should display.
+  ///
+  /// Pass this to `MaterialApp.locale`. It changes when [init] or [translate]
+  /// runs, and listeners are notified so the app can rebuild.
   Locale? get currentLocale => _currentLocale;
 
   /// Generate the supported locales for the app.
@@ -178,12 +199,8 @@ class FlutterLocalization {
 
   /// Apply all the needed delegate and the package delegate for the app.
   /// This will use at the MaterialApp
-  Iterable<LocalizationsDelegate<dynamic>> get localizationsDelegates => [
-        _delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ];
+  Iterable<LocalizationsDelegate<dynamic>> get localizationsDelegates =>
+      _localizationsDelegates;
 
   /// Provide the font family by the current locale's language code
   String? get fontFamily => _fontFamily[_currentLocale?.languageCode];

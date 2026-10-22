@@ -373,36 +373,6 @@ the first supported locale.
 
 ## 9. Findings and risks
 
-### Critical: package locale can disagree with Flutter locale
-
-The example passes `supportedLocales` and `localizationsDelegates`, but does not
-pass:
-
-```
-locale: localization.currentLocale
-```
-
-The custom delegate ignores the locale Flutter asks it to load when
-`newLocale` is present, and loads the package-selected locale instead. Flutter's
-other delegates still follow Flutter's own locale resolution.
-
-Possible result after switching:
-
-- package strings display Japanese;
-- `Localizations.localeOf(context)` remains English;
-- Material/Cupertino widget labels remain English;
-- text direction remains tied to Flutter's locale;
-- locale-aware formatting uses the wrong locale.
-
-Recommendation:
-
-- make `currentLocale` the authoritative `MaterialApp.locale`;
-- update the README and example immediately;
-- preferably expose a `Listenable`, controller, or builder that naturally
-  rebuilds `MaterialApp`;
-- avoid a delegate that loads a locale different from the locale argument
-  supplied by Flutter.
-
 ### Critical: locale identity is reduced to language code
 
 Although models accept script and country, matching uses only `languageCode` in:

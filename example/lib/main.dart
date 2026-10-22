@@ -38,12 +38,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    _localization.onTranslatedLanguage = _onTranslatedLanguage;
-    _initializeLocalization();
     super.initState();
-  }
-
-  Future<void> _initializeLocalization() async {
     _localization.init(
       initLanguageCode: 'en',
       source: LocalizationSource.jsonAsset,
@@ -70,17 +65,19 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void _onTranslatedLanguage(Locale? locale) {
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      supportedLocales: _localization.supportedLocales,
-      localizationsDelegates: _localization.localizationsDelegates,
-      home: const SettingsScreen(),
-      theme: ThemeData(fontFamily: _localization.fontFamily),
+    return ListenableBuilder(
+      listenable: _localization,
+      builder: (context, child) {
+        return MaterialApp(
+          locale: _localization.currentLocale,
+          supportedLocales: _localization.supportedLocales,
+          localizationsDelegates: _localization.localizationsDelegates,
+          home: const SettingsScreen(),
+          theme: ThemeData(fontFamily: _localization.fontFamily),
+        );
+      },
     );
   }
 }
@@ -145,6 +142,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ItemWidget(
               title: 'Locale Identifier',
               content: _localization.currentLocale.localeIdentifier,
+            ),
+            ItemWidget(
+              title: 'Flutter Locale',
+              content: Localizations.localeOf(context).toString(),
             ),
             ItemWidget(
               title: 'String Format',

@@ -3,6 +3,7 @@
 * Convert the plugin to a pure Flutter package
 * Use Flutter's platform dispatcher to determine the platform locale
 * Remove native plugin implementations and plugin-only dependencies
+* Keep package translations on the same locale as Flutter. Pass `locale: FlutterLocalization.instance.currentLocale` to `MaterialApp`. `FlutterLocalization` is now a `ChangeNotifier`; listen to it to rebuild when the language changes.
 
 ## 0.4.1
 

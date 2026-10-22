@@ -64,7 +64,8 @@ flutter:
 
 ## Project Configuration
 
-* Ensure package initialization. Update main function into async function, add `WidgetsFlutterBinding.ensureInitialized()`
+* Ensure package initialization. Update main function into async function, add
+  `WidgetsFlutterBinding.ensureInitialized()`
   and `await FlutterLocalization.instance.ensureInitialized()` before `runApp()` function like below.
 
 ```dart
@@ -89,17 +90,11 @@ final FlutterLocalization localization = FlutterLocalization.instance;
 @override
 void initState() {
   super.initState();
-  localization.onTranslatedLanguage = _onTranslatedLanguage;
   // Initialize with map-based
   _initializeLocalizationMapBased();
-  // or JSON asset base on your language source 
+  // or JSON asset base on your language source
   _initializeLocalizationJsonAsset();
   // make sure to use only 1 type of source
-}
-
-// The setState call here is required to rebuild the app after language changes.
-void _onTranslatedLanguage(Locale? locale) {
-  setState(() {});
 }
 
 void _initializeLocalizationMapBased() {
@@ -127,15 +122,27 @@ void _initializeLocalizationJsonAsset() {
 }
 ```
 
-* Add `supportedLocales` and `localizationsDelegates` to the `MaterialApp`
+* Listen for language changes and pass `currentLocale` to `MaterialApp.locale`, along with `supportedLocales` and
+  `localizationsDelegates`.
+
+`FlutterLocalization` is a `ChangeNotifier`. The package delegate loads the locale Flutter asks for, so `locale` has to
+be `currentLocale`. That keeps package strings, Material and Cupertino labels, text direction, and
+`Localizations.localeOf` on the same locale.
 
 ```dart
 @override
 Widget build(BuildContext context) {
-  return MaterialApp(
-    supportedLocales: localization.supportedLocales,
-    localizationsDelegates: localization.localizationsDelegates,
-    home: const SettingsScreen(),
+  return ListenableBuilder(
+    listenable: localization,
+    builder: (context, child) {
+      return MaterialApp(
+        locale: localization.currentLocale,
+        supportedLocales: localization.supportedLocales,
+        localizationsDelegates: localization.localizationsDelegates,
+        home: const SettingsScreen(),
+        theme: ThemeData(fontFamily: localization.fontFamily),
+      );
+    },
   );
 }
 ```
@@ -151,8 +158,8 @@ ElevatedButton(
 );
 ```
 
-* To display the value from the Map data, just use the `getString()` extension by providing the context
-  (the `AppLocale.title` is the constant from mixin class above)
+* To display the value from the Map data, just use the `getString()` extension by providing the context (the
+  `AppLocale.title` is the constant from mixin class above)
 
 ```
 AppLocale.title.getString(context);
@@ -229,16 +236,9 @@ MapLocale('en', AppLocale.EN, fontFamily: 'MuseoSans');
 MapLocale('en', AppLocale.EN, fontFamily: GoogleFonts.lato().fontFamily);
 ```
 
-Lastly, provide the font family to the MaterialApp's ThemeData
+Lastly, provide the font family to the MaterialApp's ThemeData inside the same `ListenableBuilder`, so it updates with
+the locale:
 
 ```
-@override
-Widget build(BuildContext context) {
-    return MaterialApp(
-        supportedLocales: localization.supportedLocales,
-        localizationsDelegates: localization.localizationsDelegates,
-        home: const SettingsScreen(),
-        theme: ThemeData(fontFamily: localization.fontFamily),
-    );
-}
+theme: ThemeData(fontFamily: localization.fontFamily),
 ```
