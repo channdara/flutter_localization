@@ -6,10 +6,12 @@
 * Keep package translations on the same locale as Flutter. Pass `locale: FlutterLocalization.instance.currentLocale` to
   `MaterialApp`. `FlutterLocalization` is now a `ChangeNotifier`; listen to it to rebuild when the language changes.
 * Match locales by language, script, and country. `translate()` accepts a language code or a full locale tag such as
-  `en-US` or `zh-Hant`, and `translateLocale()` accepts a `Locale`. Language-only requests that match more than one
-  variant are rejected.
+  `en-US` or `zh-Hant`, and a new function `translateLocale()` accepts a `Locale`. Language-only requests that match
+  more than one variant are rejected.
 * Overlapping JSON loads no longer let a slower asset replace the locale that was selected later. Decoded JSON is cached
   per locale.
+* Validate startup and saved locales in `init`. A saved locale that matches one supported locale is kept, and rewritten
+  when resolution changes its script or country. An unsupported or unreadable saved locale is removed.
 
 ## 0.4.1
 

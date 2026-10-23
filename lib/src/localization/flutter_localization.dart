@@ -28,8 +28,12 @@ class FlutterLocalization extends ChangeNotifier {
   /// The current locale of the app. It will change after [translate] called.
   Locale? _currentLocale;
 
-  /// The boolean indicate that locale is load from shared preferences.
-  bool _localeFromPreferences = false;
+  /// Locale stored in preferences, when the stored value could be read.
+  ///
+  /// [init] resolves this against the supported locales. A value that resolves
+  /// to a different supported locale is rewritten. A value that does not
+  /// resolve is removed.
+  Locale? _persistedLocale;
 
   /// Callback for the translation. This will call after the [translate]
   /// function is called.
@@ -51,15 +55,18 @@ class FlutterLocalization extends ChangeNotifier {
     ],
   );
 
-  /// To ensure the currentLocale object is provided before runApp
+  /// Loads the saved locale so [currentLocale] is available before runApp.
+  ///
+  /// When nothing is saved, or the stored value cannot be read, [currentLocale]
+  /// is the platform locale until [init] runs. An unreadable preference is
+  /// removed.
   Future<void> ensureInitialized() async {
-    final locale = await PreferenceUtil.getLocale();
-    _localeFromPreferences = locale != null;
+    _persistedLocale = await PreferenceUtil.getLocale();
     _currentLocale =
-        locale ?? WidgetsBinding.instance.platformDispatcher.locale;
+        _persistedLocale ?? WidgetsBinding.instance.platformDispatcher.locale;
   }
 
-  /// Initialize the localization configuration.
+  /// Initializes supported locales and selects the locale to display.
   ///
   /// When [source] is [LocalizationSource.map], provide [mapLocales] which
   /// contain in-memory string maps for each supported language.
@@ -67,8 +74,20 @@ class FlutterLocalization extends ChangeNotifier {
   /// When [source] is [LocalizationSource.jsonAsset], provide [jsonLocales]
   /// which describe each supported locale and its JSON asset path.
   ///
-  /// The [initLanguageCode] is usually loaded from shared preferences to
-  /// determine the initial language when the app starts for the first time.
+  /// [initLanguageCode] is the configured startup language, such as `en` or
+  /// `zh-Hant`. It is not loaded from preferences. The displayed locale is
+  /// chosen in this order:
+  ///
+  /// 1. The saved locale, when it resolves to one supported locale. A saved
+  ///    value that resolves to a different supported locale is rewritten. A
+  ///    saved value that does not resolve is removed.
+  /// 2. [initLanguageCode], when it names one supported locale.
+  /// 3. The platform locale, when it resolves to one supported locale.
+  /// 4. The first locale in [mapLocales] or [jsonLocales].
+  ///
+  /// Throws [ArgumentError] when the locale list is empty, when the same
+  /// language, script, and country is configured twice, or when
+  /// [initLanguageCode] cannot be parsed or matches more than one variant.
   void init({
     required String initLanguageCode,
     LocalizationSource source = LocalizationSource.map,
@@ -76,17 +95,13 @@ class FlutterLocalization extends ChangeNotifier {
     List<JsonLocale>? jsonLocales,
   }) {
     if (_currentLocale == null) throw const EnsureInitializeException();
-    _supportedLocales.clear();
-    _fontFamily.clear();
     switch (source) {
       case LocalizationSource.map:
         _configureFromMapLocales(mapLocales ?? <MapLocale>[]);
       case LocalizationSource.jsonAsset:
         _configureFromJsonLocales(jsonLocales ?? <JsonLocale>[]);
     }
-    if (!_localeFromPreferences) {
-      _currentLocale = _resolveLocale(parseLocale(initLanguageCode));
-    }
+    _currentLocale = _selectStartupLocale(initLanguageCode);
     _reload();
   }
 
@@ -102,11 +117,16 @@ class FlutterLocalization extends ChangeNotifier {
         'mapLocales must be provided when using LocalizationSource.map',
       );
     }
+    final resolvedLocales = locales.map((e) => e.locale).toList();
+    _rejectDuplicateLocales(resolvedLocales, 'mapLocales');
     FlutterLocalizationTranslator.instance.mapLocales(locales);
-    _supportedLocales = locales.map((e) => e.locale).toList();
-    for (final locale in locales) {
-      _fontFamily[locale.locale.localeIdentifier] = locale.fontFamily;
-    }
+    _supportedLocales = resolvedLocales;
+    _fontFamily
+      ..clear()
+      ..addAll(<String, String?>{
+        for (final locale in locales)
+          locale.locale.localeIdentifier: locale.fontFamily,
+      });
   }
 
   /// Configure localization using JSON-backed [JsonLocale] definitions.
@@ -122,21 +142,176 @@ class FlutterLocalization extends ChangeNotifier {
         'jsonLocales must be provided when using LocalizationSource.jsonAsset',
       );
     }
+    final resolvedLocales = locales.map((e) => e.locale).toList();
+    _rejectDuplicateLocales(resolvedLocales, 'jsonLocales');
     FlutterLocalizationTranslator.instance.jsonLocales(locales);
-    _supportedLocales = locales.map((e) => e.locale).toList();
-    for (final locale in locales) {
-      _fontFamily[locale.locale.localeIdentifier] = locale.fontFamily;
+    _supportedLocales = resolvedLocales;
+    _fontFamily
+      ..clear()
+      ..addAll(<String, String?>{
+        for (final locale in locales)
+          locale.locale.localeIdentifier: locale.fontFamily,
+      });
+  }
+
+  /// Chooses the locale [init] should display.
+  ///
+  /// Resolution order is the saved locale, then [initLanguageCode], then the
+  /// platform locale, then the first configured locale. A saved locale that
+  /// resolves to a different supported locale is rewritten. One that does not
+  /// resolve is removed. An [initLanguageCode] that matches more than one
+  /// variant throws [ArgumentError].
+  Locale _selectStartupLocale(String initLanguageCode) {
+    final requestedInit = _parseInitLanguage(initLanguageCode);
+    final initResolved = resolveSupportedLocale(
+      requestedInit,
+      _supportedLocales,
+    );
+    final initMatches = _localesWithLanguage(requestedInit);
+    if (initResolved == null && initMatches.length > 1) {
+      throw ArgumentError.value(
+        initLanguageCode,
+        'initLanguageCode',
+        'Startup locale "$initLanguageCode" matches more than one supported locale (${_describeLocales(initMatches)}). Use a full locale tag such as "en-US" or "zh-Hant".',
+      );
+    }
+
+    if (_persistedLocale != null) {
+      final resolved = resolveSupportedLocale(
+        _persistedLocale!,
+        _supportedLocales,
+      );
+      if (resolved != null) {
+        if (resolved != _persistedLocale) {
+          _storeLocale(resolved);
+        }
+        return resolved;
+      }
+      _storeLocale(null);
+    }
+
+    if (initResolved != null) return initResolved;
+    final platformResolved = resolveSupportedLocale(
+      WidgetsBinding.instance.platformDispatcher.locale,
+      _supportedLocales,
+    );
+    if (platformResolved != null) return platformResolved;
+    return _supportedLocales.first;
+  }
+
+  /// Parses [initLanguageCode] into a [Locale].
+  ///
+  /// Tags that [parseLocale] rejects are rethrown as an [ArgumentError] named
+  /// `initLanguageCode`, so startup configuration fails with the parameter
+  /// that the caller passed.
+  Locale _parseInitLanguage(String initLanguageCode) {
+    try {
+      return parseLocale(initLanguageCode);
+    } catch (error) {
+      throw ArgumentError.value(
+        initLanguageCode,
+        'initLanguageCode',
+        error.toString(),
+      );
     }
   }
 
+  /// Keeps [locale] as the saved locale in memory and in preferences.
+  ///
+  /// Pass null to forget the saved locale. The preference write is started
+  /// and not awaited.
+  void _storeLocale(Locale? locale) {
+    _persistedLocale = locale;
+    PreferenceUtil.setLocale(locale);
+  }
+
+  /// Throws [ArgumentError] when [locales] lists the same locale twice.
+  ///
+  /// Comparison uses [_localeIdentity], so letter case does not make two
+  /// entries distinct. [parameterName] is included in the error so the message
+  /// points at `mapLocales` or `jsonLocales`.
+  void _rejectDuplicateLocales(List<Locale> locales, String parameterName) {
+    final seen = <String>{};
+    for (final locale in locales) {
+      final identity = _localeIdentity(locale);
+      if (!seen.add(identity)) {
+        throw ArgumentError.value(
+          identity,
+          parameterName,
+          'Duplicate locale "$identity". Each language, script, and country combination must be configured once.',
+        );
+      }
+    }
+  }
+
+  /// Returns supported locales that share [requested]'s language code.
+  ///
+  /// The language comparison is case-insensitive. Script and country are
+  /// ignored, so this is used to detect an ambiguous language-only request.
+  List<Locale> _localesWithLanguage(Locale requested) {
+    final language = requested.languageCode.toLowerCase();
+    return _supportedLocales
+        .where((Locale locale) => locale.languageCode.toLowerCase() == language)
+        .toList(growable: false);
+  }
+
+  /// Joins [locales] as a comma-separated list of locale identifiers.
+  ///
+  /// Used in [ArgumentError] messages so the caller can see which configured
+  /// locales were considered.
+  String _describeLocales(Iterable<Locale> locales) =>
+      locales.map((Locale locale) => locale.localeIdentifier).join(', ');
+
+  /// Builds a `language_script_country` key for comparing [locale] values.
+  ///
+  /// Language is lowercase, script is title case, and country is uppercase.
+  /// Missing script or country parts are left out, so `en` and `en_US` stay
+  /// different while `en_us` and `en_US` share one key.
+  String _localeIdentity(Locale locale) {
+    return <String>[
+      locale.languageCode.toLowerCase(),
+      _normalizedScript(locale.scriptCode) ?? '',
+      _normalizedCountry(locale.countryCode) ?? '',
+    ].where((String part) => part.isNotEmpty).join('_');
+  }
+
+  /// Returns [script] in title case, such as `hant` to `Hant`.
+  ///
+  /// Returns null when [script] is null or empty.
+  String? _normalizedScript(String? script) {
+    if (script == null || script.isEmpty) return null;
+    return '${script[0].toUpperCase()}${script.substring(1).toLowerCase()}';
+  }
+
+  /// Returns [country] in upper case, such as `us` to `US`.
+  ///
+  /// Returns null when [country] is null or empty.
+  String? _normalizedCountry(String? country) {
+    if (country == null || country.isEmpty) return null;
+    return country.toUpperCase();
+  }
+
+  /// Returns the single supported locale that matches [requested].
+  ///
+  /// Delegates the match to [resolveSupportedLocale]. Throws [ArgumentError]
+  /// when no configured locale matches, or when [requested] names a language
+  /// that has more than one configured variant.
   Locale _resolveLocale(Locale requested) {
     final locale = resolveSupportedLocale(requested, _supportedLocales);
     if (locale != null) return locale;
 
+    final matches = _localesWithLanguage(requested);
+    if (matches.length > 1) {
+      throw ArgumentError.value(
+        requested.localeIdentifier,
+        'locale',
+        'Locale "${requested.localeIdentifier}" matches more than one supported locale (${_describeLocales(matches)}). Use a full locale tag such as "en-US" or "zh-Hant".',
+      );
+    }
     throw ArgumentError.value(
       requested.localeIdentifier,
       'locale',
-      'Locale is unsupported or ambiguous. Use a full locale tag when multiple variants of a language are configured.',
+      'Locale "${requested.localeIdentifier}" is not supported. Configured locales: ${_describeLocales(_supportedLocales)}.',
     );
   }
 
@@ -158,7 +333,7 @@ class FlutterLocalization extends ChangeNotifier {
     final resolved = _resolveLocale(locale);
     if (resolved == _currentLocale) return;
     _currentLocale = resolved;
-    if (save) PreferenceUtil.setLocale(_currentLocale);
+    if (save) _storeLocale(resolved);
     _reload();
   }
 

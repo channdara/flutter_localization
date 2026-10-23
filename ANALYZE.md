@@ -373,21 +373,6 @@ the first supported locale.
 
 ## 9. Findings and risks
 
-### High: unsupported startup and saved locales are not handled
-
-An invalid `initLanguageCode` reaches `singleWhere` and throws. A locale restored
-from preferences bypasses startup-language generation and is never checked
-against supported locales. Map loading then throws if that language is absent;
-JSON mode clears strings for an absent descriptor.
-
-Recommendation:
-
-- validate configuration at `init`;
-- define a documented fallback order;
-- report duplicate and unsupported locales with actionable `ArgumentError`
-  messages;
-- migrate or clear unsupported persisted values.
-
 ### High: platform locale parsing is fragile
 
 `_platformLocale()` splits on `-` or `_`, then always assigns `locale.last` as
