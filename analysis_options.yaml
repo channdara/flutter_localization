@@ -1,3 +1,4 @@
+include: package:flutter_lints/flutter.yaml
 # Specify analysis options.
 #
 # For a list of lints, see: https://dart.dev/tools/linter-rules

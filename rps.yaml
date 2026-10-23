@@ -1,5 +1,5 @@
 scripts:
-  upgrade: 'dart run lib/script/upgrade_all_dependencies.dart'
+  upgrade: 'dart run tool/upgrade_all_dependencies.dart'
   test: 'flutter pub publish --dry-run'
   publish: 'flutter pub publish'
   cleans: 'flutter clean && cd example && flutter clean && cd ..'

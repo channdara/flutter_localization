@@ -3,6 +3,28 @@
 * Convert the plugin to a pure Flutter package
 * Use Flutter's platform dispatcher to determine the platform locale
 * Remove native plugin implementations and plugin-only dependencies
+* Keep package translations on the same locale as Flutter. Pass `locale: FlutterLocalization.instance.currentLocale` to
+  `MaterialApp`. `FlutterLocalization` is now a `ChangeNotifier`; listen to it to rebuild when the language changes.
+* Subscribe to language changes with `addListener` and `removeListener`, or with `ListenableBuilder`, so more than one
+  listener can follow the locale and each can be removed on dispose. `onTranslatedLanguage` still runs for existing
+  apps, but it is deprecated: assigning it replaces the previous callback.
+* Match locales by language, script, and country. `translate()` accepts a language code or a full locale tag such as
+  `en-US` or `zh-Hant`, and a new function `translateLocale()` accepts a `Locale`. Language-only requests that match
+  more than one variant are rejected.
+* Overlapping JSON loads no longer let a slower asset replace the locale that was selected later. Decoded JSON is cached
+  per locale.
+* Preload configured JSON assets from `init` and `translate`, starting with the active locale, and keep those decoded
+  maps for later loads. The localization delegate reloads strings when the map or JSON sources are replaced.
+* Validate startup and saved locales in `init`. A saved locale that matches one supported locale is kept, and rewritten
+  when resolution changes its script or country. An unsupported or unreadable saved locale is removed.
+* Parse locale tags by subtag shape. `en` stays language-only, `zh-Hant-TW` keeps its script and country, and POSIX
+  values such as `en_US.UTF-8` drop the encoding and modifier before the language, script, and country are read.
+* Require each JSON translation file to be a flat object of string values. Nested objects, arrays, numbers, booleans,
+  and null fail the load with `FormatException`.
+* Keep missing translations readable. `getString` returns `key not found` when the key or translator is missing.
+  `formatString` keeps the original text in those cases, including when the context has no translator.
+* Look up built-in language names from a fixed catalog of each language's own name. The lookup uses the language code
+  only and does not translate that name into the current UI locale.
 
 ## 0.4.1
 
@@ -30,7 +52,7 @@
 
 ## 0.3.0
 
-* Breaking change: added **ensureInitialized()** function (check more information at README or EXAMPLE)
+* Breaking change: added **ensureInitialized ()** function (check more information at README or EXAMPLE)
 
 ## 0.2.3
 
@@ -48,30 +70,26 @@
 
 ## 0.2.0
 
-* Added **scriptCode** support in the **MapLocale** model. Thanks to
-  **@dujiepeng** for the suggestion
+* Added **scriptCode** support in the **MapLocale** model. Thanks to **@dujiepeng** for the suggestion
 * Refactor all **Locale** object to use **Locale.fromSubtags**
 * Update some dependencies use to support the package
 
 ## 0.1.14
 
-* Increase android minSdk support to 21 and add support to higher gradle build
-  tools version
+* Increase android minSdk support to 21 and add support to higher gradle build tools version
 
 ## 0.1.13
 
-* Added **StringsUtil** and **ContextExtension** for helping with localization
-  text. Check the readme page at [Some update note] section.
+* Added **StringsUtil** and **ContextExtension** for helping with localization text. Check the readme page
+  at [Some update note] section.
 
 ## 0.1.12
 
-* Add **LocaleExtension** for getting the locale identifier (en_US, km_KH,
-  ja_JP, ect)
+* Add **LocaleExtension** for getting the locale identifier (en_US, km_KH, ja_JP, ect)
 
 ## 0.1.11
 
-* Add **fontFamily** param in **MapLocale** model for providing font family for
-  each language (this field is optional)
+* Add **fontFamily** param in **MapLocale** model for providing font family for each language (this field is optional)
 * Update some dependencies use to support the package
 
 ## 0.1.10
@@ -95,28 +113,26 @@
 ## 0.1.6
 
 * Update some dependencies use to support the package
-* Remove the required context in **getString()** method
+* Remove the required context in **getString ()** method
 
 ## 0.1.5
 
-* Add condition to the **translate()** function to prevent it recall on the same
-  provided **languageCode**
+* Add condition to the **translate ()** function to prevent it recall on the same provided **languageCode**
 * Update some dependencies use to support the package
 * Small make-change on **example** file
 
 ## 0.1.4
 
-* I have found some issues and a little bit of low performance when using the
-  **load from json file** method, so I decided to remove it for better usage
-* Remove the old **init()** function and rename the **initWithMap()** to
-  **init()** instead
+* I have found some issues and a little bit of low performance when using the **load from json file** method, so I
+  decided to remove it for better usage
+* Remove the old **init ()** function and rename the **initWithMap ()** to **init ()** instead
 
 ## 0.1.3
 
-* Optimize some code and allowed the **onTranslatedLanguage** callback to be
-  null. Thanks to **@Hasankanso** for the suggestion
-* NOTE: **init()** function will be removed soon for better load time and
-  performance, please use **initWithMap()** instead
+* Optimize some code and allowed the **onTranslatedLanguage** callback to be null. Thanks to **@Hasankanso** for the
+  suggestion
+* NOTE: **init ()** function will be removed soon for better load time and performance, please use **initWithMap ()**
+  instead
 
 ## 0.1.2
 
@@ -136,14 +152,12 @@
 
 ## 0.0.11
 
-* Add the possibility to do localization with **Map<String, dynamic>** instead
-  of **json file**. Check the **README** or **example** for more information
-  with the **initWithMap()** function
+* Add the possibility to do localization with **Map<String, dynamic>** instead of **json file**. Check the **README** or
+  **example** for more information with the **initWithMap ()** function
 
 ## 0.0.10
 
-* Solve the problem where **currentLocale** is null when try to call at the
-  **main.dart** after **initState()**
+* Solve the problem where **currentLocale** is null when try to call at the **main.dart** after **initState ()**
 
 ## 0.0.9
 
@@ -155,23 +169,21 @@
 
 ## 0.0.7
 
-* Add possibility to add more custom delegate at the **init()** function
+* Add possibility to add more custom delegate at the **init ()** function
 
 ## 0.0.6
 
 * Added get language name feature
-* In **init()** function, rename **languageCodes** to **supportedLanguageCodes**
-* Added **save** parameter in **translate()** function, so you can decide to
-  save the cache or not
+* In **init ()** function, rename **languageCodes** to **supportedLanguageCodes**
+* Added **save** parameter in **translate ()** function, so you can decide to save the cache or not
 
 ## 0.0.5
 
-* Fix bug where the initLanguageCode in **init()** function is not working
+* Fix bug where the initLanguageCode in **init ()** function is not working
 
 ## 0.0.4
 
-* Add language cache (the selected language will save and load when the app is
-  open)
+* Add language cache (the selected language will save and load when the app is open)
 
 ## 0.0.3
 

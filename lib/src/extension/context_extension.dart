@@ -3,13 +3,24 @@ import 'package:flutter/material.dart';
 import '../localization/flutter_localization_translator.dart';
 
 extension ContextExtension on BuildContext {
+  /// Replaces each `%a` in [fullText] with the next entry in [args].
+  ///
+  /// [fullText] and every argument are looked up as translation keys. A missing
+  /// key, or a context with no translator, keeps that original text. Placeholders
+  /// in the resolved format string are still replaced from left to right.
   String formatString(String fullText, List<dynamic> args) {
     final translator = FlutterLocalizationTranslator.of(this);
-    fullText = '${translator?.getStringOrKey(fullText)}';
+    var formatted = _textOrKey(translator, fullText);
     for (final element in args) {
-      final replace = '${translator?.getStringOrKey(element.toString())}';
-      fullText = fullText.replaceFirst('%a', replace);
+      final key = element.toString();
+      formatted = formatted.replaceFirst('%a', _textOrKey(translator, key));
     }
-    return fullText;
+    return formatted;
   }
 }
+
+/// Returns the translation of [key].
+///
+/// A missing key and a null [translator] both return [key].
+String _textOrKey(FlutterLocalizationTranslator? translator, String key) =>
+    translator?.getStringOrKey(key) ?? key;
