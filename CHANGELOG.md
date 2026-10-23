@@ -23,6 +23,8 @@
   and null fail the load with `FormatException`.
 * Keep missing translations readable. `getString` returns `key not found` when the key or translator is missing.
   `formatString` keeps the original text in those cases, including when the context has no translator.
+* Look up built-in language names from a fixed catalog of each language's own name. The lookup uses the language code
+  only and does not translate that name into the current UI locale.
 
 ## 0.4.1
 

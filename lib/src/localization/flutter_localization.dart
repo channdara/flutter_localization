@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../../flutter_localization.dart';
+import '../data/language_name.dart';
 import '../model/ensure_initialized_exception.dart';
 import '../utility/preference_util.dart';
 import 'flutter_localization_delegate.dart';
@@ -372,11 +373,15 @@ class FlutterLocalization extends ChangeNotifier {
     }
   }
 
-  /// This just call the getName() function from [FlutterLocalizationTranslator]
-  /// class for getting the full language name by the language code.
+  /// Returns the language's own name for [languageCode].
+  ///
+  /// When [languageCode] is omitted, the current locale's language code is
+  /// used. The result is the name speakers of that language use for it, such
+  /// as `English` or `日本語`. It is not translated into the current UI locale,
+  /// and script or country variants share that language-code name. An unknown
+  /// code returns `Name for <code> not found`.
   String getLanguageName({String? languageCode}) =>
-      FlutterLocalizationTranslator.instance
-          .getName(languageCode ?? _currentLocale!.languageCode);
+      languageNameFor(languageCode ?? _currentLocale!.languageCode);
 
   /// Get the list of supported language code provided by the [init] function
   List<String> get supportedLanguageCodes =>

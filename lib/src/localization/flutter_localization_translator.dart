@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../data/language_name.dart';
 import '../extension/locale_extension.dart';
 import '../model/json_locale.dart';
 import '../model/load_request.dart';
@@ -346,9 +345,4 @@ class FlutterLocalizationTranslator {
   /// for `%a` replacement.
   String getStringOrKey(String key) =>
       _string[key] == null ? key : _string[key].toString();
-
-  /// This function will return the language name by the language code provided.
-  String getName(String languageCode) => languageName[languageCode] == null
-      ? 'Name for $languageCode not found'
-      : languageName[languageCode].toString();
 }

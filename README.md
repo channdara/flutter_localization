@@ -171,15 +171,16 @@ AppLocale.title.getString(context);
 
 ## Extras
 
-* You also can get the language name too. If you don't specify the language code for the function, it will return the
-  language name depend on the current app locale
+* `getLanguageName()` returns that language's own name from a fixed catalog, such as `English` or `日本語`. The name is
+  not translated into the current UI locale. Leave out `languageCode` to use the current locale's language code.
+  Region and script variants share one name. An unknown code returns `Name for <code> not found`.
 
 ```
 localization.getLanguageName(languageCode: 'en');  // English
 localization.getLanguageName(languageCode: 'km');  // ភាសាខ្មែរ
 localization.getLanguageName(languageCode: 'ja');  // 日本語
 
-localization.getLanguageName();  // get language name depend on current app locale
+localization.getLanguageName();  // own name of the current language
 ```
 
 * If you need to use locale identifier in some case, you can get it from the current locale. The identifier format is

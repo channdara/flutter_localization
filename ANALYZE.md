@@ -373,21 +373,6 @@ the first supported locale.
 
 ## 9. Findings and risks
 
-### Medium: language-name data is global, fixed, and not locale-sensitive
-
-The language-name catalog returns each language's native/autonym-like label.
-Names cannot be overridden, region/script variants are ignored, and missing
-codes return an English error string. The data also includes questionable legacy
-or typo-like entries.
-
-Recommendation:
-
-- type it as `Map<String, String>`;
-- make it const and internal;
-- allow application overrides;
-- clarify that values are self-names, not names localized to the current UI;
-- review against a maintained locale dataset.
-
 ### Medium: dependency/tool placement can be improved
 
 `yaml` is used only by `lib/script/upgrade_all_dependencies.dart`, not at package
