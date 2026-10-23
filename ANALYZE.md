@@ -373,23 +373,6 @@ the first supported locale.
 
 ## 9. Findings and risks
 
-### High: platform locale parsing is fragile
-
-`_platformLocale()` splits on `-` or `_`, then always assigns `locale.last` as
-the country code. A language-only locale such as `en` becomes effectively
-`Locale.fromSubtags(languageCode: 'en', countryCode: 'en')`.
-
-POSIX locale values such as `en_US.UTF-8` or values with modifiers are not
-normalized. Arbitrary three-part input is assumed to be
-language-script-country even when it is not.
-
-Recommendation:
-
-- use `platformDispatcher.locale` instead of parsing strings;
-- if parsing remains, normalize encoding/modifier suffixes and handle lengths
-  explicitly;
-- add tests for `en`, `en-US`, `zh-Hant-TW`, `en_US.UTF-8`, and malformed input.
-
 ### High: JSON reloads are uncached and delegate always reloads
 
 `shouldReload` always returns `true`. The JSON source reads and decodes the asset

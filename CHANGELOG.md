@@ -12,6 +12,8 @@
   per locale.
 * Validate startup and saved locales in `init`. A saved locale that matches one supported locale is kept, and rewritten
   when resolution changes its script or country. An unsupported or unreadable saved locale is removed.
+* Parse locale tags by subtag shape. `en` stays language-only, `zh-Hant-TW` keeps its script and country, and POSIX
+  values such as `en_US.UTF-8` drop the encoding and modifier before the language, script, and country are read.
 
 ## 0.4.1
 

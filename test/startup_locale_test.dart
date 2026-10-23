@@ -207,6 +207,78 @@ void main() {
     );
   });
 
+  test('language-only platform locale is not given a country code', () async {
+    final binding = TestWidgetsFlutterBinding.instance;
+    binding.platformDispatcher.localeTestValue = const Locale('en');
+    addTearDown(binding.platformDispatcher.clearLocaleTestValue);
+    final localization = await _load();
+
+    localization.init(
+      initLanguageCode: 'zz',
+      mapLocales: const <MapLocale>[_english, _japanese],
+    );
+
+    expect(localization.currentLocale, const Locale('en'));
+    expect(localization.currentLocale?.countryCode, isNull);
+    expect(localization.currentLocale?.scriptCode, isNull);
+  });
+
+  test('platform locale keeps script and country', () async {
+    final binding = TestWidgetsFlutterBinding.instance;
+    binding.platformDispatcher.localeTestValue = const Locale.fromSubtags(
+      languageCode: 'zh',
+      scriptCode: 'Hant',
+      countryCode: 'TW',
+    );
+    addTearDown(binding.platformDispatcher.clearLocaleTestValue);
+    final localization = await _load();
+
+    localization.init(
+      initLanguageCode: 'zz',
+      mapLocales: const <MapLocale>[
+        MapLocale(
+          'zh',
+          <String, dynamic>{'title': '简体'},
+          scriptCode: 'Hans',
+          countryCode: 'CN',
+        ),
+        MapLocale(
+          'zh',
+          <String, dynamic>{'title': '繁體'},
+          scriptCode: 'Hant',
+          countryCode: 'TW',
+        ),
+      ],
+    );
+
+    expect(
+      localization.currentLocale,
+      const Locale.fromSubtags(
+        languageCode: 'zh',
+        scriptCode: 'Hant',
+        countryCode: 'TW',
+      ),
+    );
+  });
+
+  test('posix startup tag drops the encoding suffix', () async {
+    final localization = await _load();
+
+    localization.init(
+      initLanguageCode: 'en_US.UTF-8',
+      mapLocales: const <MapLocale>[
+        MapLocale(
+          'en',
+          <String, dynamic>{'title': 'Color'},
+          countryCode: 'US',
+        ),
+        _japanese,
+      ],
+    );
+
+    expect(localization.currentLocale, const Locale('en', 'US'));
+  });
+
   test('duplicate map locales are rejected', () async {
     final localization = await _load();
 
