@@ -19,6 +19,8 @@
   when resolution changes its script or country. An unsupported or unreadable saved locale is removed.
 * Parse locale tags by subtag shape. `en` stays language-only, `zh-Hant-TW` keeps its script and country, and POSIX
   values such as `en_US.UTF-8` drop the encoding and modifier before the language, script, and country are read.
+* Require each JSON translation file to be a flat object of string values. Nested objects, arrays, numbers, booleans,
+  and null fail the load with `FormatException`.
 
 ## 0.4.1
 

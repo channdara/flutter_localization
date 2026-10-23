@@ -373,41 +373,6 @@ the first supported locale.
 
 ## 9. Findings and risks
 
-### Medium: preference writes cannot be observed
-
-`translate` returns `void`, while `PreferenceUtil.setLocale` is asynchronous.
-Callers cannot wait for persistence or handle errors.
-
-Recommendation:
-
-- return `Future<void>` from `translate`, or explicitly isolate and report
-  persistence errors;
-- separate in-memory selection from persistence when API compatibility matters.
-
-### Medium: mutable collections leak into runtime behavior
-
-Map data is assigned directly to the translator. Lists are retained without
-defensive copies, and `supportedLocales` exposes the internal list as an
-`Iterable`.
-
-Recommendation:
-
-- copy and wrap configuration with unmodifiable collections;
-- return `List<Locale>.unmodifiable`;
-- document whether dynamic mutation is supported; preferably do not support it.
-
-### Medium: nested JSON and value types are not defined
-
-Any value is converted with `.toString()`. A nested object therefore displays as
-a Dart map string instead of supporting a dotted lookup or being rejected.
-Numbers and booleans are also silently converted.
-
-Recommendation:
-
-- document JSON as a flat object of string values;
-- validate and throw a useful format exception;
-- alternatively define and test nested-key behavior.
-
 ### Medium: missing-key and uninitialized-context behavior is inconsistent
 
 `String.getString` returns `"<key> not found"` when no translator exists.

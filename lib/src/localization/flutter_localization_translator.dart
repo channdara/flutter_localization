@@ -253,7 +253,10 @@ class FlutterLocalizationTranslator {
     late final Future<Map<String, dynamic>> future;
     future = _assetLoader(jsonLocale.assetPath)
         .then<Map<String, dynamic>>(
-      (String jsonString) => _decodeStrings(jsonString),
+      (String jsonString) => _decodeStrings(
+        jsonString,
+        assetPath: jsonLocale.assetPath,
+      ),
     )
         .then<Map<String, dynamic>>((Map<String, dynamic> strings) {
       if (generation == _generation &&
@@ -270,19 +273,58 @@ class FlutterLocalizationTranslator {
     return future;
   }
 
-  static Map<String, dynamic> _decodeStrings(String jsonString) {
+  /// Decodes [jsonString] into a flat map of translation strings.
+  ///
+  /// The root must be a JSON object, and every value must be a string. Nested
+  /// objects, arrays, numbers, booleans, and null are rejected.
+  ///
+  /// Throws [FormatException] when the text is not valid JSON, or when the
+  /// document is not a flat object of strings. [assetPath] is included in
+  /// that message when it is provided.
+  static Map<String, dynamic> _decodeStrings(
+    String jsonString, {
+    String? assetPath,
+  }) {
     final dynamic decoded = jsonDecode(jsonString);
-    if (decoded is Map<String, dynamic>) return _copyMap(decoded);
-    if (decoded is Map) {
-      final copy = <String, dynamic>{};
-      for (final MapEntry<dynamic, dynamic> entry in decoded.entries) {
-        copy[entry.key.toString()] = entry.value;
-      }
-      return copy.isEmpty
-          ? const <String, dynamic>{}
-          : Map<String, dynamic>.unmodifiable(copy);
+    final where = assetPath == null
+        ? 'Translation JSON'
+        : 'Translation file "$assetPath"';
+    if (decoded is! Map) {
+      throw FormatException(
+        '$where must be a JSON object of string values. Found ${_describeJsonValue(decoded)}.',
+      );
     }
-    return const <String, dynamic>{};
+
+    final copy = <String, dynamic>{};
+    for (final MapEntry<dynamic, dynamic> entry in decoded.entries) {
+      final Object? key = entry.key;
+      final Object? value = entry.value;
+      if (key is! String) {
+        throw FormatException(
+          '$where keys must be strings. Found ${_describeJsonValue(key)}.',
+        );
+      }
+      if (value is! String) {
+        throw FormatException(
+          '$where values must be strings. Key "$key" is ${_describeJsonValue(value)}.',
+        );
+      }
+      copy[key] = value;
+    }
+    return copy.isEmpty
+        ? const <String, dynamic>{}
+        : Map<String, dynamic>.unmodifiable(copy);
+  }
+
+  /// Returns a short label for [value] used in JSON format errors.
+  static String _describeJsonValue(Object? value) {
+    if (value == null) return 'null';
+    if (value is Map) return 'a nested object';
+    if (value is List) return 'an array';
+    if (value is num) return 'a number';
+    if (value is bool) return 'a boolean';
+    if (value is String) return 'a string';
+    return 'type ${value.runtimeType}';
   }
 
   static Map<String, dynamic> _copyMap(Map<String, dynamic> source) {

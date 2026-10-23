@@ -171,6 +171,90 @@ void main() {
     expect(reads, hasLength(2));
   });
 
+  test('JSON values must be strings', () async {
+    final cases = <String, String>{
+      '{"title":{"nested":"value"}}': 'Key "title" is a nested object.',
+      '{"title":["value"]}': 'Key "title" is an array.',
+      '{"count":1}': 'Key "count" is a number.',
+      '{"enabled":true}': 'Key "enabled" is a boolean.',
+      '{"title":null}': 'Key "title" is null.',
+    };
+
+    for (final MapEntry<String, String> entry in cases.entries) {
+      FlutterLocalizationTranslator.debugReset();
+      FlutterLocalizationTranslator.debugSetAssetLoader(
+        (String path) async => entry.key,
+      );
+      FlutterLocalizationTranslator.instance.jsonLocales(const <JsonLocale>[
+        JsonLocale('en', 'assets/en.json'),
+      ]);
+
+      await expectLater(
+        FlutterLocalizationTranslator.instance.load(const Locale('en')),
+        throwsA(
+          isA<FormatException>().having(
+            (FormatException error) => error.message,
+            'message',
+            allOf(
+              contains('Translation file "assets/en.json"'),
+              contains('values must be strings'),
+              contains(entry.value),
+            ),
+          ),
+        ),
+      );
+    }
+  });
+
+  test('JSON root must be an object of string values', () async {
+    final cases = <String, String>{
+      '[]': 'Found an array.',
+      '"title"': 'Found a string.',
+      '1': 'Found a number.',
+      'true': 'Found a boolean.',
+      'null': 'Found null.',
+    };
+
+    for (final MapEntry<String, String> entry in cases.entries) {
+      FlutterLocalizationTranslator.debugReset();
+      FlutterLocalizationTranslator.debugSetAssetLoader(
+        (String path) async => entry.key,
+      );
+      FlutterLocalizationTranslator.instance.jsonLocales(const <JsonLocale>[
+        JsonLocale('en', 'assets/en.json'),
+      ]);
+
+      await expectLater(
+        FlutterLocalizationTranslator.instance.load(const Locale('en')),
+        throwsA(
+          isA<FormatException>().having(
+            (FormatException error) => error.message,
+            'message',
+            allOf(
+              contains('Translation file "assets/en.json"'),
+              contains('must be a JSON object of string values'),
+              contains(entry.value),
+            ),
+          ),
+        ),
+      );
+    }
+  });
+
+  test('an empty JSON object loads with no strings', () async {
+    FlutterLocalizationTranslator.debugSetAssetLoader(
+      (String path) async => '{}',
+    );
+    FlutterLocalizationTranslator.instance.jsonLocales(const <JsonLocale>[
+      JsonLocale('en', 'assets/en.json'),
+    ]);
+
+    final loaded = await FlutterLocalizationTranslator.instance.load(
+      const Locale('en'),
+    );
+    expect(loaded.getString('title'), 'title not found');
+  });
+
   test('malformed JSON fails the load', () async {
     FlutterLocalizationTranslator.debugSetAssetLoader(
       (String path) async => '{',

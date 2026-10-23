@@ -52,7 +52,8 @@ name is. You need to name the file follow your supported language code. For exam
 }
 ```
 
-Then declare the assets in your `pubspec.yaml`:
+Each file must be a flat JSON object of string values. Nested objects, arrays, numbers, booleans, and null are rejected
+when the file is loaded, and the load fails with a `FormatException` then declare the assets in your `pubspec.yaml`:
 
 ```yaml
 flutter:
