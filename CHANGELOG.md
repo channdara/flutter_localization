@@ -21,6 +21,8 @@
   values such as `en_US.UTF-8` drop the encoding and modifier before the language, script, and country are read.
 * Require each JSON translation file to be a flat object of string values. Nested objects, arrays, numbers, booleans,
   and null fail the load with `FormatException`.
+* Keep missing translations readable. `getString` returns `key not found` when the key or translator is missing.
+  `formatString` keeps the original text in those cases, including when the context has no translator.
 
 ## 0.4.1
 

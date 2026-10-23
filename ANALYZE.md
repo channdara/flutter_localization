@@ -373,18 +373,6 @@ the first supported locale.
 
 ## 9. Findings and risks
 
-### Medium: missing-key and uninitialized-context behavior is inconsistent
-
-`String.getString` returns `"<key> not found"` when no translator exists.
-`ContextExtension.formatString` interpolates the result of a null-aware call,
-which can turn the format text or an argument into the literal string `"null"`.
-
-Recommendation:
-
-- define one missing/unavailable translation policy;
-- avoid stringifying null;
-- allow a configurable fallback/missing-key callback for debug telemetry.
-
 ### Medium: language-name data is global, fixed, and not locale-sensitive
 
 The language-name catalog returns each language's native/autonym-like label.

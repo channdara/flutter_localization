@@ -26,6 +26,8 @@ mixin AppLocale {
   };
 }
 
+enum InitializeFor { JSON_ASSET, MAP_DATA }
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -35,12 +37,17 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final FlutterLocalization _localization = FlutterLocalization.instance;
+  final InitializeFor _initializeFor = InitializeFor.JSON_ASSET;
 
   @override
   void initState() {
     super.initState();
-    _initForJsonLocale();
-    // _initForMapLocale();
+    switch (_initializeFor) {
+      case InitializeFor.JSON_ASSET:
+        _initForJsonLocale();
+      case InitializeFor.MAP_DATA:
+        _initForMapLocale();
+    }
   }
 
   void _initForJsonLocale() {

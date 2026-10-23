@@ -334,13 +334,16 @@ class FlutterLocalizationTranslator {
     );
   }
 
-  /// This function will return the value of the map data which loaded by the
-  /// [load] function above.
+  /// Returns the translation stored for [key].
+  ///
+  /// A missing key returns `key not found`.
   String getString(String key) =>
       _string[key] == null ? '$key not found' : _string[key].toString();
 
-  /// This function is the same as [getString] above. But instead of returning
-  /// 'key not found', this will return onl the key
+  /// Returns the translation stored for [key], or [key] when it is missing.
+  ///
+  /// Callers that format text use this so an unresolved key stays available
+  /// for `%a` replacement.
   String getStringOrKey(String key) =>
       _string[key] == null ? key : _string[key].toString();
 
