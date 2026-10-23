@@ -12,15 +12,15 @@ mixin AppLocale {
   static const String thisIs = 'thisIs';
 
   // In-memory map data example
-  static const Map<String, dynamic> EN = {
+  static const Map<String, dynamic> english = {
     title: 'Localization',
     thisIs: 'This is %a package, version %a.',
   };
-  static const Map<String, dynamic> KM = {
+  static const Map<String, dynamic> khmer = {
     title: 'ការធ្វើមូលដ្ឋានីយកម្ម',
     thisIs: 'នេះគឺជាកញ្ចប់%a កំណែ%a.',
   };
-  static const Map<String, dynamic> JA = {
+  static const Map<String, dynamic> japanese = {
     title: 'ローカリゼーション',
     thisIs: 'これは%aパッケージ、バージョン%aです。',
   };
@@ -35,15 +35,20 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final FlutterLocalization _localization = FlutterLocalization.instance;
+  final LocalizationSource _source = LocalizationSource.jsonAsset;
 
   @override
   void initState() {
-    _localization.onTranslatedLanguage = _onTranslatedLanguage;
-    _initializeLocalization();
     super.initState();
+    switch (_source) {
+      case LocalizationSource.jsonAsset:
+        _initForJsonLocale();
+      case LocalizationSource.map:
+        _initForMapLocale();
+    }
   }
 
-  Future<void> _initializeLocalization() async {
+  void _initForJsonLocale() {
     _localization.init(
       initLanguageCode: 'en',
       source: LocalizationSource.jsonAsset,
@@ -70,17 +75,42 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void _onTranslatedLanguage(Locale? locale) {
-    setState(() {});
+  void _initForMapLocale() {
+    _localization.init(initLanguageCode: 'en', mapLocales: const [
+      MapLocale(
+        'en',
+        AppLocale.english,
+        countryCode: 'US',
+        fontFamily: 'Font EN',
+      ),
+      MapLocale(
+        'km',
+        AppLocale.khmer,
+        countryCode: 'KH',
+        fontFamily: 'Font KM',
+      ),
+      MapLocale(
+        'ja',
+        AppLocale.japanese,
+        countryCode: 'JP',
+        fontFamily: 'Font JA',
+      ),
+    ]);
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      supportedLocales: _localization.supportedLocales,
-      localizationsDelegates: _localization.localizationsDelegates,
-      home: const SettingsScreen(),
-      theme: ThemeData(fontFamily: _localization.fontFamily),
+    return ListenableBuilder(
+      listenable: _localization,
+      builder: (context, child) {
+        return MaterialApp(
+          locale: _localization.currentLocale,
+          supportedLocales: _localization.supportedLocales,
+          localizationsDelegates: _localization.localizationsDelegates,
+          home: const SettingsScreen(),
+          theme: ThemeData(fontFamily: _localization.fontFamily),
+        );
+      },
     );
   }
 }
@@ -145,6 +175,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ItemWidget(
               title: 'Locale Identifier',
               content: _localization.currentLocale.localeIdentifier,
+            ),
+            ItemWidget(
+              title: 'Flutter Locale',
+              content: Localizations.localeOf(context).toString(),
             ),
             ItemWidget(
               title: 'String Format',

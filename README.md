@@ -52,7 +52,8 @@ name is. You need to name the file follow your supported language code. For exam
 }
 ```
 
-Then declare the assets in your `pubspec.yaml`:
+Each file must be a flat JSON object of string values. Nested objects, arrays, numbers, booleans, and null are rejected
+when the file is loaded, and the load fails with a `FormatException` then declare the assets in your `pubspec.yaml`:
 
 ```yaml
 flutter:
@@ -64,7 +65,8 @@ flutter:
 
 ## Project Configuration
 
-* Ensure plugin initialize. Update main function into async function, add `WidgetsFlutterBinding.ensureInitialized()`
+* Ensure package initialization. Update main function into async function, add
+  `WidgetsFlutterBinding.ensureInitialized()`
   and `await FlutterLocalization.instance.ensureInitialized()` before `runApp()` function like below.
 
 ```dart
@@ -89,17 +91,11 @@ final FlutterLocalization localization = FlutterLocalization.instance;
 @override
 void initState() {
   super.initState();
-  localization.onTranslatedLanguage = _onTranslatedLanguage;
   // Initialize with map-based
   _initializeLocalizationMapBased();
-  // or JSON asset base on your language source 
+  // or JSON asset base on your language source
   _initializeLocalizationJsonAsset();
   // make sure to use only 1 type of source
-}
-
-// The setState call here is required to rebuild the app after language changes.
-void _onTranslatedLanguage(Locale? locale) {
-  setState(() {});
 }
 
 void _initializeLocalizationMapBased() {
@@ -127,32 +123,47 @@ void _initializeLocalizationJsonAsset() {
 }
 ```
 
-* Add `supportedLocales` and `localizationsDelegates` to the `MaterialApp`
+* Listen for language changes and pass `currentLocale` to `MaterialApp.locale`, along with `supportedLocales` and
+  `localizationsDelegates`.
+
+`FlutterLocalization` is a `ChangeNotifier`. The package delegate loads the locale Flutter asks for, so `locale` has to
+be `currentLocale`. That keeps package strings, Material and Cupertino labels, text direction, and
+`Localizations.localeOf` on the same locale.
 
 ```dart
 @override
 Widget build(BuildContext context) {
-  return MaterialApp(
-    supportedLocales: localization.supportedLocales,
-    localizationsDelegates: localization.localizationsDelegates,
-    home: const SettingsScreen(),
+  return ListenableBuilder(
+    listenable: localization,
+    builder: (context, child) {
+      return MaterialApp(
+        locale: localization.currentLocale,
+        supportedLocales: localization.supportedLocales,
+        localizationsDelegates: localization.localizationsDelegates,
+        home: const SettingsScreen(),
+        theme: ThemeData(fontFamily: localization.fontFamily),
+      );
+    },
   );
 }
 ```
 
-* Call the `translate()` function anytime you want to translate the app and provide it with the language code
+* Call `translate()` with a language code or full locale tag. Use the full tag
+  when a language has multiple region or script variants.
 
 ```
 ElevatedButton(
   child: const Text('English'),
   onPressed: () {
-    localization.translate('en');
+    localization.translate('en'); // or full tag en-US
   },
 );
 ```
 
-* To display the value from the Map data, just use the `getString()` extension by providing the context
-  (the `AppLocale.title` is the constant from mixin class above)
+You can also pass a `Locale` directly with `localization.translateLocale(const Locale('en', 'GB'))`.
+
+* To display the value from the Map data, just use the `getString()` extension by providing the context (the
+  `AppLocale.title` is the constant from mixin class above)
 
 ```
 AppLocale.title.getString(context);
@@ -160,15 +171,16 @@ AppLocale.title.getString(context);
 
 ## Extras
 
-* You also can get the language name too. If you don't specify the language code for the function, it will return the
-  language name depend on the current app locale
+* `getLanguageName()` returns that language's own name from a fixed catalog, such as `English` or `日本語`. The name is
+  not translated into the current UI locale. Leave out `languageCode` to use the current locale's language code.
+  Region and script variants share one name. An unknown code returns `Name for <code> not found`.
 
 ```
 localization.getLanguageName(languageCode: 'en');  // English
 localization.getLanguageName(languageCode: 'km');  // ភាសាខ្មែរ
 localization.getLanguageName(languageCode: 'ja');  // 日本語
 
-localization.getLanguageName();  // get language name depend on current app locale
+localization.getLanguageName();  // own name of the current language
 ```
 
 * If you need to use locale identifier in some case, you can get it from the current locale. The identifier format is
@@ -229,16 +241,9 @@ MapLocale('en', AppLocale.EN, fontFamily: 'MuseoSans');
 MapLocale('en', AppLocale.EN, fontFamily: GoogleFonts.lato().fontFamily);
 ```
 
-Lastly, provide the font family to the MaterialApp's ThemeData
+Lastly, provide the font family to the MaterialApp's ThemeData inside the same `ListenableBuilder`, so it updates with
+the locale:
 
 ```
-@override
-Widget build(BuildContext context) {
-    return MaterialApp(
-        supportedLocales: localization.supportedLocales,
-        localizationsDelegates: localization.localizationsDelegates,
-        home: const SettingsScreen(),
-        theme: ThemeData(fontFamily: localization.fontFamily),
-    );
-}
+theme: ThemeData(fontFamily: localization.fontFamily),
 ```

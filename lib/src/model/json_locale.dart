@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+/// A locale whose translations are loaded from a JSON asset.
+///
+/// The file at [assetPath] must be a flat JSON object of string values.
+/// Nested objects, arrays, numbers, booleans, and null fail the load with
+/// [FormatException].
 class JsonLocale {
   /// Constructor of the model.
   const JsonLocale(

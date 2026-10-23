@@ -4,11 +4,11 @@ import 'package:yaml/yaml.dart';
 
 /// Since {flutter pub upgrade} does not upgrade dependencies
 /// inside project {pubspec.yaml} I create this script to do so.
-/// This required to add {yaml} package to {pubspec.yaml} before run.
+/// This requires the {yaml} package in {dev_dependencies}.
 ///
 /// Run script command line:
 ///
-/// dart run upgrade_all_dependencies.dart
+/// dart run tool/upgrade_all_dependencies.dart
 ///
 /// Feel free to modify as you needed.
 Future<void> main() async {
