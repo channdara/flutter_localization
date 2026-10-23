@@ -373,32 +373,6 @@ the first supported locale.
 
 ## 9. Findings and risks
 
-### Medium: dependency/tool placement can be improved
-
-`yaml` is used only by `lib/script/upgrade_all_dependencies.dart`, not at package
-runtime. Keeping the maintenance script under `lib/` causes it to be included in
-the published library archive and makes `yaml` a runtime dependency.
-
-Recommendation:
-
-- move the script to `tool/`;
-- move `yaml` to `dev_dependencies`;
-- consider using `dart pub outdated` and a dependency-update service rather than
-  rewriting constraints automatically.
-
-### Medium: maintenance scripts use misleading naming
-
-`rps.yaml` maps its `test` command to `flutter pub publish --dry-run`, not to
-`flutter test`. A maintainer can therefore run what appears to be the test suite
-without discovering that no tests exist.
-
-Recommendation:
-
-- map `test` to `flutter test`;
-- rename the current command to `publish-check` or `dry-run`;
-- add analysis and formatting commands so local and CI workflows use the same
-  checks.
-
 ### Medium: lint configuration is oversized and currently not clean
 
 Both package and example carry a roughly 12 KB lint list copied from Flutter's

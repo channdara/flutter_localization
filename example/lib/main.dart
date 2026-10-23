@@ -12,21 +12,19 @@ mixin AppLocale {
   static const String thisIs = 'thisIs';
 
   // In-memory map data example
-  static const Map<String, dynamic> ENGLISH = {
+  static const Map<String, dynamic> english = {
     title: 'Localization',
     thisIs: 'This is %a package, version %a.',
   };
-  static const Map<String, dynamic> KHMER = {
+  static const Map<String, dynamic> khmer = {
     title: 'ការធ្វើមូលដ្ឋានីយកម្ម',
     thisIs: 'នេះគឺជាកញ្ចប់%a កំណែ%a.',
   };
-  static const Map<String, dynamic> JAPANESE = {
+  static const Map<String, dynamic> japanese = {
     title: 'ローカリゼーション',
     thisIs: 'これは%aパッケージ、バージョン%aです。',
   };
 }
-
-enum InitializeFor { JSON_ASSET, MAP_DATA }
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -37,15 +35,15 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final FlutterLocalization _localization = FlutterLocalization.instance;
-  final InitializeFor _initializeFor = InitializeFor.JSON_ASSET;
+  final LocalizationSource _source = LocalizationSource.jsonAsset;
 
   @override
   void initState() {
     super.initState();
-    switch (_initializeFor) {
-      case InitializeFor.JSON_ASSET:
+    switch (_source) {
+      case LocalizationSource.jsonAsset:
         _initForJsonLocale();
-      case InitializeFor.MAP_DATA:
+      case LocalizationSource.map:
         _initForMapLocale();
     }
   }
@@ -81,19 +79,19 @@ class _MyAppState extends State<MyApp> {
     _localization.init(initLanguageCode: 'en', mapLocales: const [
       MapLocale(
         'en',
-        AppLocale.ENGLISH,
+        AppLocale.english,
         countryCode: 'US',
         fontFamily: 'Font EN',
       ),
       MapLocale(
         'km',
-        AppLocale.KHMER,
+        AppLocale.khmer,
         countryCode: 'KH',
         fontFamily: 'Font KM',
       ),
       MapLocale(
         'ja',
-        AppLocale.JAPANESE,
+        AppLocale.japanese,
         countryCode: 'JP',
         fontFamily: 'Font JA',
       ),

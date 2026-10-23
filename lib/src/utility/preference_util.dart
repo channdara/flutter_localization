@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 mixin PreferenceUtil {
-  static const String _locale_key = 'translator_locale_key';
-  static const String _language_code = 'translator_language_code';
-  static const String _country_code = 'translator_country_code';
-  static const String _script_code = 'translator_script_code';
+  static const String _localeKey = 'translator_locale_key';
+  static const String _languageCode = 'translator_language_code';
+  static const String _countryCode = 'translator_country_code';
+  static const String _scriptCode = 'translator_script_code';
 
   /// Loads the saved locale.
   ///
@@ -15,24 +15,24 @@ mixin PreferenceUtil {
   /// so the next launch can select a supported locale.
   static Future<Locale?> getLocale() async {
     final pref = await SharedPreferences.getInstance();
-    final prefData = pref.getString(_locale_key);
+    final prefData = pref.getString(_localeKey);
     if (prefData == null) return null;
     final locale = _readLocale(prefData);
     if (locale != null) return locale;
-    await pref.remove(_locale_key);
+    await pref.remove(_localeKey);
     return null;
   }
 
   /// Saves [locale], or removes the saved locale when [locale] is null.
   static Future<bool> setLocale(Locale? locale) async {
     final pref = await SharedPreferences.getInstance();
-    if (locale == null) return pref.remove(_locale_key);
+    if (locale == null) return pref.remove(_localeKey);
     final value = json.encode({
-      _language_code: locale.languageCode,
-      _country_code: locale.countryCode,
-      _script_code: locale.scriptCode,
+      _languageCode: locale.languageCode,
+      _countryCode: locale.countryCode,
+      _scriptCode: locale.scriptCode,
     });
-    return pref.setString(_locale_key, value);
+    return pref.setString(_localeKey, value);
   }
 
   /// Decodes the JSON preference [stored] into a [Locale].
@@ -50,9 +50,9 @@ mixin PreferenceUtil {
     }
     if (decoded is! Map<String, dynamic>) return null;
 
-    final Object? language = decoded[_language_code];
-    final Object? country = decoded[_country_code];
-    final Object? script = decoded[_script_code];
+    final Object? language = decoded[_languageCode];
+    final Object? country = decoded[_countryCode];
+    final Object? script = decoded[_scriptCode];
     if (language is! String || language.isEmpty) return null;
     if (country is! String?) return null;
     if (script is! String?) return null;
