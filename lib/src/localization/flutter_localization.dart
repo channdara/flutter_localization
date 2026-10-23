@@ -3,7 +3,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../../flutter_localization.dart';
 import '../data/language_name.dart';
-import '../model/ensure_initialized_exception.dart';
 import '../utility/preference_util.dart';
 import 'flutter_localization_delegate.dart';
 import 'flutter_localization_translator.dart';
@@ -111,7 +110,7 @@ class FlutterLocalization extends ChangeNotifier {
     List<MapLocale>? mapLocales,
     List<JsonLocale>? jsonLocales,
   }) {
-    if (_currentLocale == null) throw const EnsureInitializeException();
+    if (_currentLocale == null) throw const EnsureInitializedException();
     switch (source) {
       case LocalizationSource.map:
         _configureFromMapLocales(mapLocales ?? <MapLocale>[]);
