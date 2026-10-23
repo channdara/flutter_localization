@@ -373,47 +373,6 @@ the first supported locale.
 
 ## 9. Findings and risks
 
-### High: JSON reloads are uncached and delegate always reloads
-
-`shouldReload` always returns `true`. The JSON source reads and decodes the asset
-on each load. Because application code rebuilds `MaterialApp` after language
-changes and the delegate object is replaced, unnecessary work can occur.
-
-Recommendation:
-
-- compare the delegate locale in `shouldReload`;
-- cache decoded immutable maps;
-- preload when appropriate;
-- make loading behavior observable in tests and benchmarks.
-
-### High: no automated tests or CI
-
-There are no Dart/Flutter tests. This leaves the most important behavior
-unprotected:
-
-- initialization order;
-- source validation;
-- preference restore and corruption;
-- locale fallback;
-- country/script variants;
-- delegate reload behavior;
-- map and JSON lookup;
-- malformed JSON;
-- missing assets and keys;
-- rapid switching;
-- formatting;
-- language names;
-- web platform registration.
-
-There is also no visible CI workflow to run analysis, tests, formatting, publish
-validation, or platform builds.
-
-Recommendation:
-
-- add unit and widget tests before refactoring;
-- add CI on the package's minimum supported Flutter version and current stable;
-- add at least one web compile and selected native example builds.
-
 ### Medium: callback state management is brittle
 
 There is one public mutable `onTranslatedLanguage` callback. A later assignment

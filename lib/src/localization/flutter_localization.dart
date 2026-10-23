@@ -85,6 +85,10 @@ class FlutterLocalization extends ChangeNotifier {
   /// 3. The platform locale, when it resolves to one supported locale.
   /// 4. The first locale in [mapLocales] or [jsonLocales].
   ///
+  /// JSON assets begin loading before listeners are notified. The selected
+  /// locale is requested first, then the other configured locales. Later loads
+  /// reuse those decoded maps.
+  ///
   /// Throws [ArgumentError] when the locale list is empty, when the same
   /// language, script, and country is configured twice, or when
   /// [initLanguageCode] cannot be parsed or matches more than one variant.
@@ -102,6 +106,7 @@ class FlutterLocalization extends ChangeNotifier {
         _configureFromJsonLocales(jsonLocales ?? <JsonLocale>[]);
     }
     _currentLocale = _selectStartupLocale(initLanguageCode);
+    FlutterLocalizationTranslator.instance.preload(_currentLocale);
     _reload();
   }
 
@@ -326,6 +331,9 @@ class FlutterLocalization extends ChangeNotifier {
   }
 
   /// Changes the app to the supported locale matching [locale].
+  ///
+  /// When translations come from JSON, that asset is requested before
+  /// listeners rebuild if it is not already cached or in flight.
   void translateLocale(
     Locale locale, {
     bool save = true,
@@ -334,6 +342,7 @@ class FlutterLocalization extends ChangeNotifier {
     if (resolved == _currentLocale) return;
     _currentLocale = resolved;
     if (save) _storeLocale(resolved);
+    FlutterLocalizationTranslator.instance.preload(resolved);
     _reload();
   }
 

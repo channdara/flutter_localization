@@ -84,6 +84,42 @@ class FlutterLocalizationTranslator {
     _jsonLocales = jsonLocales;
   }
 
+  /// Starts reading every configured JSON asset into the cache.
+  ///
+  /// [preferred] is requested first so the locale on screen is ahead of the
+  /// other files. Map sources are already in memory, so this returns without
+  /// reading. Each JSON asset is decoded once. [load] reuses the cached map or
+  /// the in-flight read, and reports a decode failure.
+  void preload(Locale? preferred) {
+    if (_source != LocalizationSource.jsonAsset) return;
+    final generation = _generation;
+    for (final JsonLocale jsonLocale in _jsonLocalesPreferredFirst(preferred)) {
+      _loadJsonAsset(jsonLocale, generation).ignore();
+    }
+  }
+
+  /// Puts the JSON locale that matches [preferred] ahead of the others.
+  ///
+  /// The remaining locales keep their configured order. When [preferred] is
+  /// null, unmatched, or already first, the stored list is returned.
+  static List<JsonLocale> _jsonLocalesPreferredFirst(Locale? preferred) {
+    if (preferred == null || _jsonLocales.length < 2) return _jsonLocales;
+    final resolved = resolveSupportedLocale(
+      preferred,
+      _jsonLocales.map((JsonLocale entry) => entry.locale),
+    );
+    if (resolved == null) return _jsonLocales;
+    final index = _jsonLocales.indexWhere(
+      (JsonLocale entry) => entry.locale == resolved,
+    );
+    if (index <= 0) return _jsonLocales;
+    return <JsonLocale>[
+      _jsonLocales[index],
+      ..._jsonLocales.sublist(0, index),
+      ..._jsonLocales.sublist(index + 1),
+    ];
+  }
+
   static void _replaceSource(LocalizationSource source) {
     _generation++;
     _source = source;

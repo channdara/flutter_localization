@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:flutter_localization/src/localization/flutter_localization_delegate.dart';
 import 'package:flutter_localization/src/localization/flutter_localization_translator.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -59,6 +60,55 @@ void main() {
       'Colour',
     );
     expect(reads, 2);
+  });
+
+  test('delegate reloads only when translation sources change', () {
+    final before = FlutterLocalizationDelegate(
+      FlutterLocalizationTranslator.configurationId,
+    );
+    FlutterLocalizationTranslator.instance.mapLocales(<MapLocale>[
+      const MapLocale('en', <String, dynamic>{'title': 'Hello'}),
+    ]);
+    final after = FlutterLocalizationDelegate(
+      FlutterLocalizationTranslator.configurationId,
+    );
+
+    expect(after.shouldReload(before), isTrue);
+    expect(
+      after.shouldReload(
+        FlutterLocalizationDelegate(
+          FlutterLocalizationTranslator.configurationId,
+        ),
+      ),
+      isFalse,
+    );
+  });
+
+  test('JSON preload reads the startup locale before the other assets',
+      () async {
+    final reads = <String>[];
+    FlutterLocalizationTranslator.debugSetAssetLoader((String path) async {
+      reads.add(path);
+      return '{"title":"ok"}';
+    });
+    final localization = FlutterLocalization.instance;
+    await localization.ensureInitialized();
+    localization.init(
+      initLanguageCode: 'ja',
+      source: LocalizationSource.jsonAsset,
+      jsonLocales: const <JsonLocale>[
+        JsonLocale('en', 'assets/en.json'),
+        JsonLocale('ja', 'assets/ja.json'),
+      ],
+    );
+
+    expect(reads, <String>['assets/ja.json', 'assets/en.json']);
+    expect(
+      (await FlutterLocalizationTranslator.instance.load(const Locale('en')))
+          .getString('title'),
+      'ok',
+    );
+    expect(reads, <String>['assets/ja.json', 'assets/en.json']);
   });
 
   test('a slower JSON load cannot replace the locale selected later', () async {
@@ -224,6 +274,57 @@ void main() {
     expect(find.text('Hallo'), findsOneWidget);
     expect(find.text('こんにちは'), findsNothing);
     expect(_localeOf(tester, 'Hallo'), const Locale('de'));
+  });
+
+  testWidgets('rebuilding with the same locale does not reload JSON', (
+    tester,
+  ) async {
+    var reads = 0;
+    FlutterLocalizationTranslator.debugSetAssetLoader((String path) async {
+      reads += 1;
+      return path.endsWith('ja.json')
+          ? '{"title":"こんにちは"}'
+          : '{"title":"Hello"}';
+    });
+    final localization = FlutterLocalization.instance;
+    await localization.ensureInitialized();
+    localization.init(
+      initLanguageCode: 'en',
+      source: LocalizationSource.jsonAsset,
+      jsonLocales: const <JsonLocale>[
+        JsonLocale('en', 'assets/en.json'),
+        JsonLocale('ja', 'assets/ja.json'),
+      ],
+    );
+
+    await tester.pumpWidget(_LocalizedApp(localization));
+    await tester.pumpAndSettle();
+    expect(find.text('Hello'), findsOneWidget);
+    final first = FlutterLocalizationTranslator.of(
+      tester.element(find.text('Hello')),
+    );
+    final readsAfterLoad = reads;
+
+    await tester.pumpWidget(_LocalizedApp(localization));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Hello'), findsOneWidget);
+    expect(reads, readsAfterLoad);
+    expect(
+      identical(
+        first,
+        FlutterLocalizationTranslator.of(
+          tester.element(find.text('Hello')),
+        ),
+      ),
+      isTrue,
+    );
+
+    localization.translate('ja', save: false);
+    await tester.pumpAndSettle();
+
+    expect(find.text('こんにちは'), findsOneWidget);
+    expect(reads, readsAfterLoad);
   });
 }
 

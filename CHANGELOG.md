@@ -10,6 +10,8 @@
   more than one variant are rejected.
 * Overlapping JSON loads no longer let a slower asset replace the locale that was selected later. Decoded JSON is cached
   per locale.
+* Preload configured JSON assets from `init` and `translate`, starting with the active locale, and keep those decoded
+  maps for later loads. The localization delegate reloads strings when the map or JSON sources are replaced.
 * Validate startup and saved locales in `init`. A saved locale that matches one supported locale is kept, and rewritten
   when resolution changes its script or country. An unsupported or unreadable saved locale is removed.
 * Parse locale tags by subtag shape. `en` stays language-only, `zh-Hant-TW` keeps its script and country, and POSIX

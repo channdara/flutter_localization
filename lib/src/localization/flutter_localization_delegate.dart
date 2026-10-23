@@ -34,7 +34,10 @@ class FlutterLocalizationDelegate
   Future<FlutterLocalizationTranslator> load(Locale locale) =>
       FlutterLocalizationTranslator.instance.load(locale);
 
-  /// Locale changes are applied through `MaterialApp.locale`.
+  /// Reloads strings when [configurationId] changes.
+  ///
+  /// A new id means the map or JSON sources were replaced. Flutter loads the
+  /// locale passed to `MaterialApp.locale` by calling [load].
   @override
   bool shouldReload(FlutterLocalizationDelegate old) =>
       configurationId != old.configurationId;
