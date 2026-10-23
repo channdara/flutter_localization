@@ -373,18 +373,6 @@ the first supported locale.
 
 ## 9. Findings and risks
 
-### Medium: callback state management is brittle
-
-There is one public mutable `onTranslatedLanguage` callback. A later assignment
-silently replaces an earlier listener. Consumers must manually call `setState`,
-and there is no standard disposal/subscription mechanism.
-
-Recommendation:
-
-- make the controller a `ChangeNotifier`/`ValueNotifier<Locale>`;
-- expose an `InheritedNotifier`, builder, or standard listener API;
-- preserve a simple migration path for the existing callback.
-
 ### Medium: preference writes cannot be observed
 
 `translate` returns `void`, while `PreferenceUtil.setLocale` is asynchronous.

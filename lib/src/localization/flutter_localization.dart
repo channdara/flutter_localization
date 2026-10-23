@@ -7,14 +7,21 @@ import '../utility/preference_util.dart';
 import 'flutter_localization_delegate.dart';
 import 'flutter_localization_translator.dart';
 
-typedef TranslatorCallback = void Function(Locale?);
+/// Legacy callback invoked with the locale selected by [FlutterLocalization].
+///
+/// Prefer [FlutterLocalization.addListener] and
+/// [FlutterLocalization.removeListener], or a [ListenableBuilder]. Those
+/// support more than one subscriber.
+typedef TranslatorCallback = void Function(Locale? locale);
 
 /// Coordinates the selected locale and the translations Flutter loads.
 ///
 /// This object is a [ChangeNotifier]. Listen to [FlutterLocalization.instance]
-/// and pass [currentLocale] to `MaterialApp.locale` (usually from a
-/// [ListenableBuilder]) so package strings and Flutter's own locale stay
-/// aligned. The shared instance is not meant to be disposed.
+/// with [FlutterLocalization.addListener] and
+/// [FlutterLocalization.removeListener], or with a [ListenableBuilder], and
+/// pass [currentLocale] to `MaterialApp.locale` so package strings and
+/// Flutter's own locale stay aligned. Remove a listener when its owner is
+/// disposed. The shared instance is not meant to be disposed.
 class FlutterLocalization extends ChangeNotifier {
   /// Private instance constructor.
   FlutterLocalization._instance();
@@ -35,12 +42,17 @@ class FlutterLocalization extends ChangeNotifier {
   /// resolve is removed.
   Locale? _persistedLocale;
 
-  /// Callback for the translation. This will call after the [translate]
-  /// function is called.
+  /// Single callback invoked after [init] or [translate] changes the locale.
   ///
-  /// Prefer listening to this [ChangeNotifier] instead. A later assignment
-  /// replaces the previous callback. Either way, rebuild with
-  /// `locale: currentLocale`.
+  /// Listen with [addListener] and [removeListener], or with a
+  /// [ListenableBuilder], so more than one owner can subscribe and each can
+  /// unregister when it is disposed. Assigning this replaces the previous
+  /// callback. It does not remove listeners registered with [addListener].
+  /// Rebuild with `locale: currentLocale`.
+  @Deprecated(
+    'Listen with addListener and removeListener, or with ListenableBuilder. '
+    'Assigning onTranslatedLanguage replaces the previous callback.',
+  )
   TranslatorCallback? onTranslatedLanguage;
 
   /// Font families keyed by full locale identity.
@@ -348,9 +360,16 @@ class FlutterLocalization extends ChangeNotifier {
 
   /// Notifies listeners that [currentLocale] changed so the app can rebuild
   /// `MaterialApp` with that locale.
+  ///
+  /// The legacy [onTranslatedLanguage] callback runs first. Listeners
+  /// registered with [addListener] are still notified when that callback
+  /// throws.
   void _reload() {
-    onTranslatedLanguage?.call(_currentLocale);
-    notifyListeners();
+    try {
+      onTranslatedLanguage?.call(_currentLocale);
+    } finally {
+      notifyListeners();
+    }
   }
 
   /// This just call the getName() function from [FlutterLocalizationTranslator]

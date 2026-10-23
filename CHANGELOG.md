@@ -5,6 +5,9 @@
 * Remove native plugin implementations and plugin-only dependencies
 * Keep package translations on the same locale as Flutter. Pass `locale: FlutterLocalization.instance.currentLocale` to
   `MaterialApp`. `FlutterLocalization` is now a `ChangeNotifier`; listen to it to rebuild when the language changes.
+* Subscribe to language changes with `addListener` and `removeListener`, or with `ListenableBuilder`, so more than one
+  listener can follow the locale and each can be removed on dispose. `onTranslatedLanguage` still runs for existing
+  apps, but it is deprecated: assigning it replaces the previous callback.
 * Match locales by language, script, and country. `translate()` accepts a language code or a full locale tag such as
   `en-US` or `zh-Hant`, and a new function `translateLocale()` accepts a `Locale`. Language-only requests that match
   more than one variant are rejected.
