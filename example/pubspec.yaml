@@ -1,5 +1,5 @@
 name: flutter_localization_example
-description: "Demonstrates how to use the flutter_localization plugin."
+description: "Demonstrates how to use the flutter_localization package."
 version: 1.0.0+1
 publish_to: 'none'
 

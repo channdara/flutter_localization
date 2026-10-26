@@ -1,3 +1,4 @@
+include: package:flutter_lints/flutter.yaml
 # Specify analysis options.
 #
 # For a list of lints, see: https://dart.dev/tools/linter-rules
@@ -29,6 +30,13 @@ analyzer:
     # Ignore protoc generated files
     - "dev/conductor/lib/proto/*"
     - "engine/**"
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
 
 linter:
   rules:

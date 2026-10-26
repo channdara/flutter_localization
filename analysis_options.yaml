@@ -1,3 +1,4 @@
+include: package:flutter_lints/flutter.yaml
 # Specify analysis options.
 #
 # For a list of lints, see: https://dart.dev/tools/linter-rules
@@ -26,9 +27,16 @@ analyzer:
     deprecated_member_use_from_same_package: ignore
   exclude:
     - "bin/cache/**"
-    # Ignore protoc generated files
+      # Ignore protoc generated files
     - "dev/conductor/lib/proto/*"
     - "engine/**"
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
 
 linter:
   rules:
@@ -37,11 +45,11 @@ linter:
     - always_declare_return_types
     # - always_put_control_body_on_new_line
     # - always_put_required_named_parameters_first # we prefer having parameters in the same order as fields https://github.com/flutter/flutter/issues/10219
-    # - always_specify_types
+    # - always_specify_types # conflicts with omit_obvious_local_variable_types
     # - always_use_package_imports # we do this commonly
     - annotate_overrides
     - annotate_redeclares
-    # - avoid_annotating_with_dynamic # conflicts with always_specify_types
+    # - avoid_annotating_with_dynamic # conflicts with type_annotate_public_apis
     - avoid_bool_literals_in_conditional_expressions
     # - avoid_catches_without_on_clauses # blocked on https://github.com/dart-lang/linter/issues/3023
     # - avoid_catching_errors # blocked on https://github.com/dart-lang/linter/issues/4998
@@ -52,8 +60,9 @@ linter:
     - avoid_equals_and_hash_code_on_mutable_classes
     - avoid_escaping_inner_quotes
     - avoid_field_initializers_in_const_classes
-    # - avoid_final_parameters # incompatible with prefer_final_parameters
-    # - avoid_function_literals_in_foreach_calls
+    # TODO(kallentu): Remove this lint once the Dart SDK in Flutter is on version 3.13.
+    - avoid_final_parameters
+    - avoid_function_literals_in_foreach_calls
     # - avoid_futureor_void # not yet tested
     # - avoid_implementing_value_types # see https://github.com/dart-lang/linter/issues/4558
     - avoid_init_to_null
@@ -75,7 +84,7 @@ linter:
     - avoid_slow_async_io
     - avoid_type_to_string
     - avoid_types_as_parameter_names
-    # - avoid_types_on_closure_parameters # conflicts with always_specify_types
+    # - avoid_types_on_closure_parameters # not yet tested
     - avoid_unnecessary_containers
     - avoid_unused_constructor_parameters
     - avoid_void_async
@@ -141,9 +150,9 @@ linter:
     - noop_primitive_operations
     - null_check_on_nullable_type_parameter
     - null_closures
-    # - omit_local_variable_types # opposite of always_specify_types
-    # - omit_obvious_local_variable_types # not yet tested
-    # - omit_obvious_property_types # not yet tested
+    # - omit_local_variable_types # superset of omit_obvious_local_variable_types
+    - omit_obvious_local_variable_types # not yet tested
+    # - omit_obvious_property_types # conflicts with type_annotate_public_apis
     # - one_member_abstracts # too many false positives
     - only_throw_errors # this does get disabled in a few places where we have legacy code that uses strings et al
     - overridden_fields
@@ -201,13 +210,13 @@ linter:
     - sort_constructors_first
     # - sort_pub_dependencies # prevents separating pinned transitive dependencies
     - sort_unnamed_constructors_first
-    # - specify_nonobvious_local_variable_types # not yet tested
-    # - specify_nonobvious_property_types # not yet tested
+    # - specify_nonobvious_local_variable_types
+    - specify_nonobvious_property_types
     - strict_top_level_inference
     - test_types_in_equals
     - throw_in_finally
     - tighten_type_of_initializing_formals
-    # - type_annotate_public_apis # subset of always_specify_types
+    - type_annotate_public_apis
     - type_init_formals
     - type_literal_in_constant_pattern
     # - unawaited_futures # too many false positives, especially with the way AnimationController works
@@ -264,4 +273,6 @@ linter:
     # - use_to_and_as_if_applicable # has false positives, so we prefer to catch this by code-review
     - use_truncating_division
     - valid_regexps
+    # TODO(kallentu): Remove this lint once the Dart SDK in Flutter is on version 3.13.
+    - var_with_no_type_annotation
     - void_checks
