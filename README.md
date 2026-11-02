@@ -85,7 +85,6 @@ Future<void> main() async {
 Keep the shared instance and call `init` before the first `MaterialApp` build. `initState` is a typical place.
 
 ```dart
-
 final FlutterLocalization localization = FlutterLocalization.instance;
 ```
 
@@ -195,7 +194,7 @@ void dispose() {
 }
 
 void _onLocaleChanged() {
-  // Read localization.currentLocale here.
+  // Proceed at your discretion.
 }
 ```
 
@@ -211,7 +210,7 @@ unchanged. A request that resolves to the locale already on screen returns immed
 `translate` accepts a language code or a full tag. Use the full tag when one language has several region or script
 variants.
 
-```
+```dart
 ElevatedButton(
   child: const Text('English'),
   onPressed: () {
@@ -222,7 +221,7 @@ ElevatedButton(
 
 ### With a Locale object
 
-```
+```dart
 localization.translateLocale(const Locale('en', 'GB'));
 
 localization.translateLocale(const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'));
@@ -234,7 +233,7 @@ localization.translateLocale(const Locale.fromSubtags(languageCode: 'zh', script
 
 Map data:
 
-```
+```dart
 localization.init(
   initLanguageCode: 'en-US',
   mapLocales: const [
@@ -247,7 +246,7 @@ localization.init(
 
 JSON file:
 
-```
+```dart
 localization.init(
   initLanguageCode: 'en-US',
   source: LocalizationSource.jsonAsset,
@@ -268,7 +267,7 @@ once.
 
 `getString` looks up the key in the translator for this context.
 
-```
+```dart
 AppLocale.title.getString(context);
 ```
 
@@ -283,7 +282,7 @@ translator.
 
 `Strings.format` inserts each argument with `toString()`.
 
-```
+```dart
 Strings.format('Hello %a, this is me %a.', ['Dara', 'Sopheak']);
 // Hello Dara, this is me Sopheak.
 ```
@@ -294,7 +293,7 @@ Strings.format('Hello %a, this is me %a.', ['Dara', 'Sopheak']);
 with no translator, keeps that original text. Placeholders in the resolved format string are still filled from left to
 right.
 
-```
+```dart
 // AppLocale.thisIs == 'thisIs'
 // en: 'This is %a package, version %a.'
 // AppLocale.title == 'title' -> 'Localization'
@@ -310,7 +309,7 @@ as [google_fonts](https://pub.dev/packages/google_fonts).
 
 ### Map data
 
-```
+```dart
 MapLocale('en', AppLocale.EN, fontFamily: 'MuseoSans');
 
 MapLocale('en', AppLocale.EN, fontFamily: GoogleFonts.lato().fontFamily);
@@ -318,7 +317,7 @@ MapLocale('en', AppLocale.EN, fontFamily: GoogleFonts.lato().fontFamily);
 
 ### JSON file
 
-```
+```dart
 JsonLocale('en', 'assets/i18n/en.json', fontFamily: 'MuseoSans');
 
 JsonLocale('km', 'assets/i18n/km.json', countryCode: 'KH', fontFamily: 'Font KM');
@@ -326,7 +325,7 @@ JsonLocale('km', 'assets/i18n/km.json', countryCode: 'KH', fontFamily: 'Font KM'
 
 Read the current family from the same `ListenableBuilder` that rebuilds `MaterialApp`:
 
-```
+```{dart, error=FALSE}
 theme: ThemeData(fontFamily: localization.fontFamily),
 ```
 
@@ -338,7 +337,7 @@ theme: ThemeData(fontFamily: localization.fontFamily),
 script variants share that language-code name. Omit `languageCode` to use the current locale. An unknown code returns
 `Name for <code> not found`.
 
-```
+```dart
 localization.getLanguageName(languageCode: 'en'); // English
 localization.getLanguageName(languageCode: 'km'); // ភាសាខ្មែរ
 localization.getLanguageName(languageCode: 'ja'); // 日本語
@@ -351,6 +350,6 @@ localization.getLanguageName(); // own name of the current language
 `localeIdentifier` joins the language, script, and country with `_`. Script and country are omitted when absent, so the
 result can be only the language code. Examples: `en`, `en_US`, `zh_Hant`, `zh_Hant_TW`.
 
-```
+```dart
 localization.currentLocale.localeIdentifier;
 ```
