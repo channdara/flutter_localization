@@ -1,10 +1,6 @@
 # Do not remove or rename entries in this file, only add new ones
 # See https://github.com/flutter/flutter/issues/128635 for more context.
 
-# Swift Package Manager (plugin packages)
-.build/
-.swiftpm/
-
 # Miscellaneous
 *.class
 *.lock
@@ -16,6 +12,11 @@
 .buildlog/
 .history
 .svn/
+
+# As packages are no longer pinned, we use a lockfile for testing locally.
+# When unpinning packages, Using lockfiles ensures that failures in PRs are
+# actually due to those PRs, not due to a package being updated.
+!/pubspec.lock
 
 # IntelliJ related
 *.ipr
@@ -66,7 +67,6 @@ analysis_benchmark.json
 # Flutter/Dart/Pub related
 **/doc/api/
 .dart_tool/
-.flutter-plugins
 .flutter-plugins-dependencies
 **/generated_plugin_registrant.dart
 .packages
@@ -128,13 +128,20 @@ local.properties
 **/macos/Flutter/ephemeral
 **/xcuserdata/
 
+# Swift package manager (for code indexing)
+**/.build/
+
 # Windows
 **/windows/flutter/ephemeral/
 **/windows/flutter/generated_plugin_registrant.cc
 **/windows/flutter/generated_plugin_registrant.h
+**/windows/flutter/generated_plugins.cmake
 
 # Linux
 **/linux/flutter/ephemeral/
+**/linux/flutter/generated_plugin_registrant.cc
+**/linux/flutter/generated_plugin_registrant.h
+**/linux/flutter/generated_plugins.cmake
 
 # Coverage
 coverage/
@@ -158,3 +165,8 @@ app.*.symbols
 .python-version
 .gclient_previous_custom_vars
 .gclient_previous_sync_commits
+
+# AI related
+.agents/rules/personal-*
+.agents/skills/personal-*
+/.agent-shell/

@@ -1,4 +1,9 @@
-final Map<String, dynamic> languageName = {
+/// Own names for language codes.
+///
+/// Each value is the name speakers of that language use for it. Names are not
+/// translated into another locale, and script or country variants are not
+/// listed separately.
+const Map<String, String> _languageNames = {
   'aa': 'Afar',
   'ab': 'Аҧсуа',
   'af': 'Afrikaans',
@@ -14,6 +19,7 @@ final Map<String, dynamic> languageName = {
   'be': 'Беларуская',
   'bg': 'Български',
   'bh': 'भोजपुरी',
+  'bho': 'भोजपुरी',
   'bi': 'Bislama',
   'bm': 'Bamanankan',
   'bn': 'বাংলা',
@@ -183,5 +189,15 @@ final Map<String, dynamic> languageName = {
   'yo': 'Yorùbá',
   'za': 'Cuengh / Tôô / 壮语',
   'zh': '中文',
-  'zu': 'isiZulu'
+  'zu': 'isiZulu',
 };
+
+/// Returns the language's own name for [languageCode].
+///
+/// The name is the one speakers of that language use for it, such as
+/// `English` or `日本語`. It is not translated into the current UI locale.
+/// [languageCode] is matched exactly, so a script or country tag such as
+/// `zh-Hant` does not select a different name. An unknown code returns
+/// `Name for <code> not found`.
+String languageNameFor(String languageCode) =>
+    _languageNames[languageCode] ?? 'Name for $languageCode not found';

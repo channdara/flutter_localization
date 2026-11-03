@@ -11,18 +11,21 @@ mixin AppLocale {
   static const String title = 'title';
   static const String thisIs = 'thisIs';
 
-  // In-memory map data example
-  static const Map<String, dynamic> EN = {
+  static const Map<String, dynamic> enUs = {
     title: 'Localization',
     thisIs: 'This is %a package, version %a.',
   };
-  static const Map<String, dynamic> KM = {
+  static const Map<String, dynamic> khmer = {
     title: 'ការធ្វើមូលដ្ឋានីយកម្ម',
     thisIs: 'នេះគឺជាកញ្ចប់%a កំណែ%a.',
   };
-  static const Map<String, dynamic> JA = {
+  static const Map<String, dynamic> japanese = {
     title: 'ローカリゼーション',
     thisIs: 'これは%aパッケージ、バージョン%aです。',
+  };
+  static const Map<String, dynamic> zhHant = {
+    title: '在地化',
+    thisIs: '這是%a套件，版本%a。',
   };
 }
 
@@ -35,52 +38,56 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final FlutterLocalization _localization = FlutterLocalization.instance;
+  final LocalizationSource _source = LocalizationSource.jsonAsset;
 
   @override
   void initState() {
-    _localization.onTranslatedLanguage = _onTranslatedLanguage;
-    _initializeLocalization();
     super.initState();
+    switch (_source) {
+      case LocalizationSource.jsonAsset:
+        _initForJsonLocale();
+      case LocalizationSource.map:
+        _initForMapLocale();
+    }
   }
 
-  Future<void> _initializeLocalization() async {
+  void _initForJsonLocale() {
     _localization.init(
-      initLanguageCode: 'en',
+      initLanguageCode: 'en-US',
       source: LocalizationSource.jsonAsset,
       jsonLocales: const [
-        JsonLocale(
-          'en',
-          'assets/i18n/en.json',
-          countryCode: 'US',
-          fontFamily: 'Font EN',
-        ),
-        JsonLocale(
-          'km',
-          'assets/i18n/km.json',
-          countryCode: 'KH',
-          fontFamily: 'Font KM',
-        ),
-        JsonLocale(
-          'ja',
-          'assets/i18n/ja.json',
-          countryCode: 'JP',
-          fontFamily: 'Font JA',
-        ),
+        JsonLocale('en', 'assets/i18n/en_US.json', countryCode: 'US'),
+        JsonLocale('km', 'assets/i18n/km.json', countryCode: 'KH'),
+        JsonLocale('ja', 'assets/i18n/ja.json', countryCode: 'JP'),
+        JsonLocale('zh', 'assets/i18n/zh_Hant.json', scriptCode: 'Hant'),
       ],
     );
   }
 
-  void _onTranslatedLanguage(Locale? locale) {
-    setState(() {});
+  void _initForMapLocale() {
+    _localization.init(
+      initLanguageCode: 'en-US',
+      mapLocales: const [
+        MapLocale('en', AppLocale.enUs, countryCode: 'US'),
+        MapLocale('km', AppLocale.khmer, countryCode: 'KH'),
+        MapLocale('ja', AppLocale.japanese, countryCode: 'JP'),
+        MapLocale('zh', AppLocale.zhHant, scriptCode: 'Hant'),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      supportedLocales: _localization.supportedLocales,
-      localizationsDelegates: _localization.localizationsDelegates,
-      home: const SettingsScreen(),
-      theme: ThemeData(fontFamily: _localization.fontFamily),
+    return ListenableBuilder(
+      listenable: _localization,
+      builder: (context, child) {
+        return MaterialApp(
+          locale: _localization.currentLocale,
+          supportedLocales: _localization.supportedLocales,
+          localizationsDelegates: _localization.localizationsDelegates,
+          home: const SettingsScreen(),
+        );
+      },
     );
   }
 }
@@ -107,13 +114,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    child: const Text('English'),
+                    child: const Text('English (US)'),
                     onPressed: () {
-                      _localization.translate('en');
+                      _localization.translate('en-US');
                     },
                   ),
                 ),
-                const SizedBox(width: 16.0),
+                const SizedBox(width: 8.0),
                 Expanded(
                   child: ElevatedButton(
                     child: const Text('ភាសាខ្មែរ'),
@@ -122,12 +129,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                   ),
                 ),
-                const SizedBox(width: 16.0),
+              ],
+            ),
+            const SizedBox(height: 8.0),
+            Row(
+              children: [
                 Expanded(
                   child: ElevatedButton(
                     child: const Text('日本語'),
                     onPressed: () {
                       _localization.translate('ja', save: false);
+                    },
+                  ),
+                ),
+                const SizedBox(width: 8.0),
+                Expanded(
+                  child: ElevatedButton(
+                    child: const Text('繁體中文'),
+                    onPressed: () {
+                      _localization.translate('zh-Hant');
                     },
                   ),
                 ),
@@ -138,27 +158,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: 'Current Language',
               content: _localization.getLanguageName(),
             ),
-            ItemWidget(
-              title: 'Font Family',
-              content: _localization.fontFamily,
-            ),
+            ItemWidget(title: 'Font Family', content: _localization.fontFamily),
             ItemWidget(
               title: 'Locale Identifier',
               content: _localization.currentLocale.localeIdentifier,
             ),
             ItemWidget(
+              title: 'Flutter Locale',
+              content: Localizations.localeOf(context).toString(),
+            ),
+            ItemWidget(
               title: 'String Format',
-              content: Strings.format(
-                'Hello %a, this is me %a.',
-                ['Dara', 'Sopheak'],
-              ),
+              content: Strings.format('Hello %a, this is me %a.', [
+                'Dara',
+                'Sopheak',
+              ]),
             ),
             ItemWidget(
               title: 'Context Format String',
-              content: context.formatString(
-                AppLocale.thisIs,
-                [AppLocale.title, 'LATEST'],
-              ),
+              content: context.formatString(AppLocale.thisIs, [
+                AppLocale.title,
+                'LATEST',
+              ]),
             ),
           ],
         ),
@@ -168,11 +189,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 }
 
 class ItemWidget extends StatelessWidget {
-  const ItemWidget({
-    super.key,
-    required this.title,
-    required this.content,
-  });
+  const ItemWidget({super.key, required this.title, required this.content});
 
   final String? title;
   final String? content;
