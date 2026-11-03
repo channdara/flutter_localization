@@ -27,7 +27,7 @@ analyzer:
     deprecated_member_use_from_same_package: ignore
   exclude:
     - "bin/cache/**"
-      # Ignore protoc generated files
+    # Ignore protoc generated files
     - "dev/conductor/lib/proto/*"
     - "engine/**"
     - build/**

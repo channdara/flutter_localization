@@ -68,7 +68,7 @@ linter:
     - avoid_init_to_null
     - avoid_js_rounded_ints
     # - avoid_multiple_declarations_per_line # seems to be a stylistic choice we don't subscribe to
-    - avoid_null_checks_in_equality_operators
+    # - avoid_null_checks_in_equality_operators
     # - avoid_positional_boolean_parameters # would have been nice to enable this but by now there's too many places that break it
     - avoid_print
     # - avoid_private_typedef_functions # we prefer having typedef (discussion in https://github.com/flutter/flutter/pull/16356)
@@ -222,7 +222,7 @@ linter:
     # - unawaited_futures # too many false positives, especially with the way AnimationController works
     # - unintended_html_in_doc_comment # blocked on https://github.com/dart-lang/linter/issues/5065
     # - unnecessary_async # not yet tested
-    - unnecessary_await_in_return
+    # - unnecessary_await_in_return
     - unnecessary_brace_in_string_interps
     - unnecessary_breaks
     - unnecessary_const
@@ -258,7 +258,7 @@ linter:
     - use_enums
     - use_full_hex_values_for_flutter_colors
     - use_function_type_syntax_for_parameters
-    - use_if_null_to_convert_nulls_to_bools
+    # - use_if_null_to_convert_nulls_to_bools
     - use_is_even_rather_than_modulo
     - use_key_in_widget_constructors
     - use_late_for_private_fields_and_variables
