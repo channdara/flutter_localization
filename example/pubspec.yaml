@@ -58,9 +58,10 @@ flutter:
 
   # Localization JSON assets used by the example application.
   assets:
-    - assets/i18n/en.json
+    - assets/i18n/en_US.json
     - assets/i18n/km.json
     - assets/i18n/ja.json
+    - assets/i18n/zh_Hant.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
