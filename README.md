@@ -1,12 +1,10 @@
 # Flutter Localization
 
-Flutter Localization is a Flutter package for in-app localization with **map data** or **JSON assets**. Version 1.0.0 is
-a pure Flutter package. It reads the device locale from Flutter's platform dispatcher.
-
-Pass `FlutterLocalization.instance.currentLocale` to `MaterialApp` so your strings, Material and Cupertino labels, text
-direction, and `Localizations.localeOf` stay on one locale. The full release history is in [CHANGELOG.md](CHANGELOG.md).
-A small [example](https://pub.dev/packages/flutter_localization/example) app is also on pub.dev, and in the `example/`
-directory of this repository.
+Flutter Localization is a package used for in-app localization with **Map data** or **JSON assets**. It is designed to
+be easy and fast to implement. This package is inspired by the Flutter
+SDK [flutter_localizations](https://api.flutter.dev/flutter/flutter_localizations/flutter_localizations-library.html)
+itself. Follow the steps below to use the package, or you can check out a
+small [example](https://pub.dev/packages/flutter_localization/example) project of the package.
 
 <a href="https://www.buymeacoffee.com/eamchanndara" target="_blank"><img height='40' width='145' style='border:0px;height:40px;' src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 <a href='https://ko-fi.com/J3J3POSKS' target='_blank'><img height='40' width='160' style='border:0px;height:40px;' src='https://storage.ko-fi.com/cdn/kofi5.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
